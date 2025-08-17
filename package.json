@@ -16,10 +16,6 @@
 		"*.{ts,tsx}": "eslint --fix",
 		"*.css": "stylelint --fix"
 	},
-	"engines": {
-		"node": "18.x",
-		"npm": "9.x"
-	},
 	"dependencies": {
 		"autoprefixer": "10.4.16",
 		"bcrypt": "^5.1.1",
