@@ -29,22 +29,13 @@ const UserSchema = new Schema({
 	description: {
 		type: String,
 	},
+	// 👇 THÊM TRƯỜNG NÀY ĐỂ QUẢN LÝ QUYỀN ADMIN 👇
+	role: {
+		type: String,
+		enum: ["user", "admin"], // Chỉ cho phép 2 giá trị này
+		default: "user",        // Mặc định tài khoản mới đăng ký là user thường
+	},
 });
 
-/**
- * For a regular  always on always 
- * running backend server (as express.js),
- * we would do something like this:
- * 
-const User = model("User", UserSchema);
-export default User;
-*/
-
-/**
- * For the Next.js API Routes, and serverless functions
- * we need something like below. Note "models" object,
- * provided by the mongoose library stores
- * all the registered models.
- */
 const User = models.User || model("User", UserSchema);
 export default User;
