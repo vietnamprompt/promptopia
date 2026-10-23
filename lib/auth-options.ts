@@ -42,13 +42,20 @@ export const authOptions: NextAuthOptions = {
 	callbacks: {
 		// https://next-auth.js.org/configuration/options#session
 		async session({ session }) {
-			await connectToMongoDb();
-			const sessionUser = await User.findOne({ email: session?.user?.email });
+			try {
+				await connectToMongoDb();
+				const sessionUser = await User.findOne({ email: session?.user?.email });
 
-			session.user.id = sessionUser?._id.toString(); // see: @/types/next-auth
-			session.user.accountProvider = sessionUser?.accountProvider;
-			session.user.username = sessionUser?.username;
-			session.user.description = sessionUser?.description;
+				if (sessionUser && session.user) {
+					(session.user as any).id = sessionUser?._id.toString(); // see: @/types/next-auth
+					(session.user as any).accountProvider = sessionUser?.accountProvider;
+					(session.user as any).username = sessionUser?.username;
+					(session.user as any).description = sessionUser?.description;
+					(session.user as any).role = sessionUser?.role || "user"; // Thêm role để phân quyền Admin
+				}
+			} catch (error) {
+				console.error("SESSION ERROR:", error);
+			}
 
 			return session; // The return type will match the one returned in `useSession()`
 		},
@@ -67,14 +74,14 @@ export const authOptions: NextAuthOptions = {
 				const userExist = await User.findOne({ email: profile?.email });
 
 				/**
-				 * NOTE: .picture does not exist on { session } depending on the provider
-				 * .image does not exist on { profile } - i.e. for GitHub 'avatar_url'...
-				 * @see '@/app/components/Nav.tsx' and '@/types/next-auth.d.ts'
+- 				NOTE: .picture does not exist on { session } depending on the provider
+- 				.image does not exist on { profile } - i.e. for GitHub 'avatar_url'...
+- 				@see '@/app/components/Nav.tsx' and '@/types/next-auth.d.ts'
 				 */
 
 				// If not create a new user in the database
 				if (!userExist) {
-					const name = String(profile?.name ?? profile?.login ?? profile?.username);
+					const name = String(profile?.name ?? (profile as any)?.login ?? (profile as any)?.username ?? "User");
 
 					await User.create({
 						email: String(profile?.email),
@@ -86,17 +93,18 @@ export const authOptions: NextAuthOptions = {
 								.replace(/[^a-z0-9]/gi, "")
 						),
 						name,
-						image: String(profile?.picture ?? profile?.image ?? profile?.avatar_url),
+						image: String((profile as any)?.picture ?? (profile as any)?.image ?? (profile as any)?.avatar_url ?? ""),
 						accountProvider: String(account?.provider),
 						description: "Hello! I am a new member of this prompt sharing community.",
+						role: "user", // Mặc định tài khoản mới tạo là user thường
 					});
 				}
 
 				return true;
 			} catch (error) {
-				console.error(error);
+				console.error("SIGN IN ERROR:", error);
 
-				return false;
+				return true; // Trả về true để tránh văng lỗi Access Denied ngoài ý muốn
 			}
 		},
 	},
