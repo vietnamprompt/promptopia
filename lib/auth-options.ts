@@ -1,6 +1,7 @@
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 
+import { getTranslations } from "next-intl/server";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import User from "@/models/user";
 
@@ -25,10 +26,6 @@ export const authOptions: NextAuthOptions = {
 		}),
 	],
 	secret: process.env.NEXTAUTH_SECRET,
-	pages: {
-		signIn: '/',
-		error: '/',
-	},
 	callbacks: {
 		async session({ session }) {
 			try {
@@ -58,7 +55,7 @@ export const authOptions: NextAuthOptions = {
 				const userExist = await User.findOne({ email: profile?.email });
 
 				if (!userExist) {
-					const name = String(profile?.name ?? profile?.login ?? profile?.username ?? "User");
+					const name = String(profile?.name ?? profile?.login ?? profile?.username);
 
 					await User.create({
 						email: String(profile?.email),
@@ -70,15 +67,16 @@ export const authOptions: NextAuthOptions = {
 								.replace(/[^a-z0-9]/gi, "")
 						),
 						name,
-						image: String(profile?.picture ?? profile?.image ?? profile?.avatar_url ?? ""),
+						image: String(profile?.picture ?? profile?.image ?? profile?.avatar_url),
 						accountProvider: String(account?.provider),
-						description: "Welcome to my profile!",
+						description: (await getTranslations("Common"))("defaultUserDescription"),
 					});
 				}
 
 				return true;
 			} catch (error) {
 				console.error("SIGN IN ERROR:", error);
+				// Trả về true để bypass lỗi, không bị văng bảng Access Denied
 				return true; 
 			}
 		},
