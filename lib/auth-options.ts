@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
 			} catch (error) {
 				console.error(error);
 
-				return true;
+				return false;
 			}
 		},
 	},
