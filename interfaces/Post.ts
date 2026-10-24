@@ -55,7 +55,7 @@ export const postFromDbInit: PostTypeFromDb = {
 
 export type PostErrorsType = {
 	// [key: string]: {}
-	[key in keyof PostTypeFromDb]: {
+	[key in keyof PostTypeFromDb]-?: {
 		kind?: string; // "regexp", "required", etc.
 		message?: string; // the actual error message
 		name?: string; // ValidatorError
