@@ -206,7 +206,8 @@
       "pending": "Chờ duyệt",
       "rejected": "Đã từ chối",
       "approved": "Đã duyệt",
-      "members": "Thành viên"
+      "members": "Thành viên",
+      "settings": "Cài đặt"
     },
     "approve": "Duyệt",
     "reject": "Từ chối",
@@ -231,6 +232,37 @@
       "confirmBlock": "Chặn thành viên này? Họ sẽ không đăng nhập hoặc đăng bài được nữa.",
       "confirmUnblock": "Bỏ chặn thành viên này?",
       "cannot": "Không thể chặn tài khoản này."
+    },
+    "settings": {
+      "title": "Cài đặt trang web",
+      "save": "Lưu cài đặt",
+      "saving": "Đang lưu...",
+      "saved": "Đã lưu. Trang sẽ tải lại.",
+      "error": "Không lưu được. Vui lòng thử lại.",
+      "logo": "Logo",
+      "logoHint": "Ảnh PNG, JPG hoặc WebP. Ảnh được tự động thu nhỏ (tối đa 256 px). Cũng dùng làm biểu tượng trên tab trình duyệt.",
+      "logoChange": "Chọn logo",
+      "logoRemove": "Dùng logo mặc định",
+      "logoInvalid": "Hãy chọn ảnh PNG, JPG hoặc WebP.",
+      "siteName": "Tên trang web",
+      "siteNameHint": "Hiện cạnh logo ở đầu mọi trang.",
+      "siteNameRequired": "Tên trang web không được để trống.",
+      "seo": "SEO (công cụ tìm kiếm và mạng xã hội)",
+      "seoHint": "Nhập nội dung cho từng ngôn ngữ. Ô nào để trống sẽ dùng nội dung mặc định.",
+      "seoTitle": "Tiêu đề trang",
+      "seoTitleHint": "Nên tối đa 60 ký tự.",
+      "seoDescription": "Mô tả",
+      "seoDescriptionHint": "Nên tối đa 160 ký tự.",
+      "seoKeywords": "Từ khóa",
+      "seoKeywordsHint": "Cách nhau bằng dấu phẩy.",
+      "verification": "Mã Google Search Console",
+      "verificationHint": "Chỉ dán mã trong thẻ meta \"google-site-verification\" (giá trị của content).",
+      "footer": "Nội dung chân trang",
+      "footerHint": "Hiện ở chân trang chủ, ví dụ ©2026 promt84.com",
+      "announcement": "Thông báo",
+      "announcementShow": "Hiện thông báo ở đầu mọi trang",
+      "announcementText": "Nội dung thông báo",
+      "preview": "Xem trước trên Google"
     }
   },
   "Follow": {

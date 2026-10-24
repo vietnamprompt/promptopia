@@ -22,6 +22,9 @@ const publicPages = [
 const intlMiddleware = createIntlMiddleware({
 	locales,
 	defaultLocale: "en",
+	// The site opens in English. The language of the browser is not used: the visitor
+	// who wants Vietnamese clicks the flag (the choice is saved in the cookie "NEXT_LOCALE").
+	localeDetection: false,
 });
 
 type AuthMiddleware = (
@@ -58,9 +61,7 @@ export default function middleware(req: NextRequest) {
 
 	if (PROFILE_PATH.test(pathname)) {
 		const fromCookie = req.cookies.get("NEXT_LOCALE")?.value;
-		const browser = (req.headers.get("accept-language") ?? "").toLowerCase();
-		const locale =
-			fromCookie && locales.includes(fromCookie) ? fromCookie : browser.startsWith("vi") ? "vi" : "en";
+		const locale = fromCookie && locales.includes(fromCookie) ? fromCookie : "en";
 
 		const url = req.nextUrl.clone();
 
@@ -72,6 +73,18 @@ export default function middleware(req: NextRequest) {
 		headers.set("X-NEXT-INTL-LOCALE", locale);
 
 		return NextResponse.rewrite(url, { request: { headers } });
+	}
+
+	// An address without the language ("/", "/post-create"): the language that the visitor chose with
+	// the flag is used, otherwise English.
+	const chosen = req.cookies.get("NEXT_LOCALE")?.value;
+
+	if (!/^\/(en|vi)(\/|$)/.test(pathname) && chosen && chosen !== "en" && locales.includes(chosen)) {
+		const url = req.nextUrl.clone();
+
+		url.pathname = `/${chosen}${pathname === "/" ? "" : pathname}`;
+
+		return NextResponse.redirect(url);
 	}
 
 	const withLocale = PROFILE_PATH_WITH_LOCALE.exec(pathname);

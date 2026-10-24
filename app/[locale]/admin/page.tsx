@@ -7,11 +7,13 @@ import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 import Header from "@/components/Header";
 import PostCard from "@/components/PostCard";
 import AdminMembers from "@/components/AdminMembers";
+import AdminSettings from "@/components/AdminSettings";
 
 const tabs = [PostStatus.PENDING, PostStatus.REJECTED, PostStatus.APPROVED];
 const MEMBERS = "members";
+const SETTINGS = "settings";
 
-type AdminTab = PostStatus | typeof MEMBERS;
+type AdminTab = PostStatus | typeof MEMBERS | typeof SETTINGS;
 
 const Admin_Page: React.FC = () => {
 	const t = useTranslations("Admin");
@@ -25,7 +27,7 @@ const Admin_Page: React.FC = () => {
 	const isAdmin = !!session?.user?.isAdmin;
 
 	const loadPosts = useCallback(async () => {
-		if (tab === MEMBERS) {
+		if (tab === MEMBERS || tab === SETTINGS) {
 			return;
 		}
 
@@ -139,12 +141,22 @@ const Admin_Page: React.FC = () => {
 				>
 					{t("tabs.members")}
 				</button>
+
+				<button
+					className={`_btn ${tab === SETTINGS ? "orange_invert" : "gray_light"}`}
+					type="button"
+					onClick={() => setTab(SETTINGS)}
+				>
+					{t("tabs.settings")}
+				</button>
 			</div>
 
 			{messageKey && <p className="form_error mt-4 text-sm">{t(messageKey)}</p>}
 
 			{tab === MEMBERS ? (
 				<AdminMembers />
+			) : tab === SETTINGS ? (
+				<AdminSettings />
 			) : loading ? (
 				<p className="mt-10 text-mlt-dark-6">{t("loading")}</p>
 			) : list.length === 0 ? (

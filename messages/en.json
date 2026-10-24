@@ -43,9 +43,9 @@
     "myPosts": "My prompts"
   },
   "Home": {
-    "headingLn1": "Discover & Share",
-    "headingLn2": "AI-Powered Prompts",
-    "subHeading": "Promptopia is an open-source AI prompting tool for modern word to discover, create and share creative prompts",
+    "headingLn1": "Khám phá & Chia sẻ",
+    "headingLn2": "Prompt AI Sáng tạo",
+    "subHeading": "Kho prompt AI mã nguồn mở để bạn khám phá, tạo và chia sẻ những prompt sáng tạo",
     "inputPlaceholder": "Search for a tag or username"
   },
   "Form": {
@@ -206,7 +206,8 @@
       "pending": "Pending",
       "rejected": "Rejected",
       "approved": "Approved",
-      "members": "Members"
+      "members": "Members",
+      "settings": "Settings"
     },
     "approve": "Approve",
     "reject": "Reject",
@@ -231,6 +232,37 @@
       "confirmBlock": "Block this member? They will not be able to sign in or post.",
       "confirmUnblock": "Unblock this member?",
       "cannot": "This account can not be blocked."
+    },
+    "settings": {
+      "title": "Site settings",
+      "save": "Save settings",
+      "saving": "Saving...",
+      "saved": "Saved. The page will reload.",
+      "error": "Could not save. Please try again.",
+      "logo": "Logo",
+      "logoHint": "PNG, JPG or WebP. The image is resized automatically (up to 256 px). Also used as the browser icon.",
+      "logoChange": "Choose a logo",
+      "logoRemove": "Use the default logo",
+      "logoInvalid": "Please choose a PNG, JPG or WebP image.",
+      "siteName": "Site name",
+      "siteNameHint": "Shown next to the logo at the top of every page.",
+      "siteNameRequired": "The site name can not be empty.",
+      "seo": "SEO (search engines and social networks)",
+      "seoHint": "Set the texts for each language. If a field is empty, the default text is used.",
+      "seoTitle": "Page title",
+      "seoTitleHint": "Best up to 60 characters.",
+      "seoDescription": "Description",
+      "seoDescriptionHint": "Best up to 160 characters.",
+      "seoKeywords": "Keywords",
+      "seoKeywordsHint": "Separated by commas.",
+      "verification": "Google Search Console code",
+      "verificationHint": "Only the code of the meta tag \"google-site-verification\" (the value of content).",
+      "footer": "Footer text",
+      "footerHint": "Shown in the footer of the homepage, i.e. ©2026 promt84.com",
+      "announcement": "Announcement",
+      "announcementShow": "Show an announcement at the top of every page",
+      "announcementText": "Text of the announcement",
+      "preview": "Preview in Google"
     }
   },
   "Follow": {

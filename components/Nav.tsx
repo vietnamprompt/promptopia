@@ -11,6 +11,7 @@ import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { Path } from "@/interfaces/Path";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 
 import LanguageSwitcher from "./LanguageSwitcher";
 import IconImageBased from "./fragments/IconImageBased";
@@ -21,6 +22,7 @@ const providersIcons = ["google", "github"];
 const Nav: React.FC = () => {
 	const t = useTranslations("Nav");
 	const { authProviders, session } = usePromptopiaContext();
+	const { siteName, logoUrl } = useSiteSettings();
 	const [toggleDropDown, setToggleDropDown] = useState(false);
 	const pathName = usePathname();
 	const { isBelowSm } = useBreakpoint("sm");
@@ -102,15 +104,16 @@ const Nav: React.FC = () => {
 				href={pathName === Path.HOME ? `${Path.HOME}?wipe=true` : Path.HOME}
 			>
 				<Image
-					alt={t("altLogo")}
+					unoptimized
+					alt={siteName}
 					className="object-contain w-10 h-10"
 					height={40}
-					src={logo}
+					src={logoUrl ?? logo}
 					width={40}
 				/>
 				<p className="logo_text relative">
 						<span className="orange_gradient font-inter text-xl font-extrabold tracking-tight">
-							promt84.com
+							{siteName}
 						</span>
 					</p>
 			</Link>
