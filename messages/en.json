@@ -117,7 +117,8 @@
       "pending": "Pending review - not visible on the homepage yet",
       "approved": "Published",
       "rejected": "Rejected - not visible on the homepage"
-    }
+    },
+    "copyCount": "Copied {count} times"
   },
   "CreatePost": {
     "imageSizeError": "Image size is too large. Maximum allowed size is 128KB.",

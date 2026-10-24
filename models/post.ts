@@ -93,6 +93,12 @@ const PostSchema = new Schema(
 		moderatedAt: {
 			type: Date,
 		},
+		// How many times the prompt was copied (see '@/app/api/copies/[postId]/route.ts').
+		copyCount: {
+			type: Number,
+			default: 0,
+			min: 0,
+		},
 	},
 	// Adds "createdAt" and "updatedAt", the last one is used to detect
 	// if a post was edited while the admin was looking at its old version.

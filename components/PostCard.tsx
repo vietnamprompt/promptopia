@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -53,6 +53,37 @@ const PostCard: React.FC<PostCardProps> = ({
 		[PostStatus.REJECTED]: "text-red-600",
 	};
 
+	const [copyCount, setCopyCount] = useState(post.copyCount ?? 0);
+	const copySent = useRef(false);
+
+	useEffect(() => {
+		setCopyCount(post.copyCount ?? 0);
+	}, [post.copyCount]);
+
+	// The server decides if the copy counts (once per viewer per 24 hours, not the author).
+	// The browser asks only once per card, the next clicks would not change anything.
+	const countCopy = async () => {
+		if (copySent.current || isEditMode || isDelMode || post.status === PostStatus.PENDING) {
+			return;
+		}
+
+		copySent.current = true;
+
+		try {
+			const response = await fetch(`/api/copies/${post._id}`, { method: "POST" });
+
+			if (response.ok) {
+				const data = await response.json();
+
+				if (typeof data.copyCount === "number") {
+					setCopyCount(data.copyCount);
+				}
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	const handlePromptCopy = () => {
 		if (setCopied === undefined) {
 			return;
@@ -60,6 +91,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
 		setCopied(post.prompt);
 		navigator.clipboard.writeText(post.prompt);
+		countCopy();
 		setTimeout(() => {
 			setCopied("");
 		}, 3500);
@@ -183,7 +215,30 @@ const PostCard: React.FC<PostCardProps> = ({
 			{!isDelMode && post.status !== PostStatus.PENDING && post.status !== PostStatus.REJECTED && (
 				<div className="mb-3 flex items-center justify-between gap-2">
 					<FollowButton userId={post.creator._id} />
-					<SaveButton count={post.savedCount} postId={post._id} />
+
+					<div className="flex items-center gap-3">
+						<span
+							className="flex items-center gap-1 text-sm text-mlt-dark-6"
+							title={t("copyCount", { count: copyCount })}
+						>
+							<svg
+								fill="none"
+								height="16"
+								stroke="currentColor"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								viewBox="0 0 24 24"
+								width="16"
+							>
+								<rect height="13" rx="2" ry="2" width="13" x="9" y="9" />
+								<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+							</svg>
+							{copyCount}
+						</span>
+
+						<SaveButton count={post.savedCount} postId={post._id} />
+					</div>
 				</div>
 			)}
 

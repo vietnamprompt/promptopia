@@ -38,6 +38,7 @@ export interface PostTypeFromDb extends Omit<PostType, "tags"> {
 	status?: PostStatus; // missing in the old posts, they are handled as "pending"
 	updatedAt?: string;
 	savedCount?: number; // how many users saved the post
+	copyCount?: number; // how many times the prompt was copied (missing in the old posts)
 }
 
 export enum AiCategories {
