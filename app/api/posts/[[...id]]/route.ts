@@ -51,7 +51,11 @@ export async function GET(request: NextRequest, { params }: Context) {
 
 		// The list of posts: only the approved posts are public.
 		if (!postId) {
-			const posts = await Post.find({ status: PostStatus.APPROVED }).populate(POST_POPULATE);
+			// The homepage uses '/api/feed' (page by page), this list is limited.
+			const posts = await Post.find({ status: PostStatus.APPROVED })
+				.sort({ _id: -1 })
+				.limit(100)
+				.populate(POST_POPULATE);
 
 			return NextResponse.json(
 				{ posts: await addSavedCounts(posts.map(toPublicPost)) },

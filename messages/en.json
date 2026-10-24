@@ -85,7 +85,20 @@
       "prompt": "Prompt",
       "tag": "Tag",
       "user": "User"
-    }
+    },
+    "tabs": {
+      "newest": "Newest",
+      "saved30": "Most saved (30 days)",
+      "savedAll": "Most saved (all time)",
+      "following": "Following"
+    },
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "noResults": "Nothing found. Try another search or filter.",
+    "emptyFollowing": "No prompts yet. Follow some authors and their newest prompts will appear here.",
+    "emptySaved": "No saved prompts in this period yet.",
+    "loginForFollowing": "Sign in to see the prompts of the authors you follow.",
+    "error": "Could not load the prompts. Please try again."
   },
   "PostCard": {
     "altProfilePicture": "Prompt Creator Profile Picture",

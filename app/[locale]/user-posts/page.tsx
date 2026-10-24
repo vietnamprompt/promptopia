@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import { redirect, useSearchParams, useRouter } from "next/navigation";
 
-import { PostTypeFromDb } from "@/interfaces/Post";
+import { PostStatus, PostTypeFromDb } from "@/interfaces/Post";
 import { fetchPosts, fetchSingleUser } from "@/lib/fetch-helpers";
 import { UserTypeFromDb } from "@/interfaces/User";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
@@ -11,7 +11,7 @@ import { Path } from "@/interfaces/Path";
 import UserPosts from "@/components/UserPosts";
 
 const UserProfile_Page: React.FC = () => {
-	const { posts, users, setUsers } = usePromptopiaContext();
+	const { users, setUsers } = usePromptopiaContext();
 	const [userPosts, setUserPosts] = useState<PostTypeFromDb[]>([]);
 	const [user, setUser] = useState<UserTypeFromDb>({} as UserTypeFromDb);
 
@@ -44,20 +44,14 @@ const UserProfile_Page: React.FC = () => {
 			})();
 		}
 
-		const findUserPosts =
-			posts && (posts.filter((post) => post.creator._id === userId) as PostTypeFromDb[]);
+		// The visitors see only the approved posts.
+		(async () => {
+			const list: PostTypeFromDb[] = (await fetchPosts(`/api/users/${userId}/posts`)) ?? [];
 
-		if (findUserPosts) {
-			setUserPosts(findUserPosts);
-		} else {
-			// If the users posts are not in the posts array, fetch them...
-			// TODO: ...this looks like a nonsense and likely to be deleted!
-			(async () => {
-				setUserPosts(await fetchPosts(`/api/users/${userId}/posts`));
-			})();
-		}
+			setUserPosts(list.filter((post) => post.status === PostStatus.APPROVED));
+		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [posts, userId, users]);
+	}, [userId, users]);
 
 	return <UserPosts posts={userPosts} user={user} />;
 };

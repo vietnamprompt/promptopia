@@ -8,7 +8,6 @@ import { Session } from "next-auth";
 import { BuiltInProviderType } from "next-auth/providers";
 
 import { PostTypeFromDb } from "@/interfaces/Post";
-import { fetchPosts } from "@/lib/fetch-helpers";
 import { UserTypeFromDb } from "@/interfaces/User";
 
 type AuthProvidersType = Record<
@@ -56,7 +55,8 @@ export const PromptopiaContextProvider: React.FC<PromptopiaContextProviderProps>
 	useEffect(() => {
 		(async () => {
 			setAuthProviders(await getProviders());
-			setPosts((await fetchPosts("/api/posts")) ?? []);
+			// The homepage loads its posts page by page ('/api/feed'), so the list is not
+			// loaded here any more. "posts" is kept for the pages that still read it.
 			setPostsLoading(false);
 		})();
 	}, []);
