@@ -40,8 +40,10 @@ export function toPublicUser(user: UserLike | null | undefined) {
 	};
 }
 
-export function toPublicPost(post: { toObject: () => Record<string, unknown> }) {
-	const plain = post.toObject();
+// "post" is a document of Mongoose, the type is not checked here because the type of the result of
+// a query with "populate()" is not exact, and it does not fit in a more strict type.
+export function toPublicPost(post: unknown) {
+	const plain = (post as { toObject: () => Record<string, unknown> }).toObject();
 
 	return { ...plain, creator: toPublicUser(plain.creator as UserLike | null | undefined) };
 }
