@@ -1,7 +1,7 @@
 /**
  * https://tailwindcss-glassmorphism.vercel.app/
  */
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import Link from "next/link";
@@ -69,6 +69,47 @@ const Form: React.FC<FormProps> = ({
 		});
 	};
 
+	// The tags that already exist, they are suggested while the user types.
+	const [existingTags, setExistingTags] = useState<{ tag: string; count: number }[]>([]);
+
+	useEffect(() => {
+		(async () => {
+			try {
+				const response = await fetch("/api/tags");
+
+				if (response.ok) {
+					setExistingTags((await response.json()).tags ?? []);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		})();
+	}, []);
+
+	const tagParts = String(post.tags ?? "").split(",");
+	const typedTags = tagParts
+		.slice(0, -1)
+		.map((tag) => tag.trim().toLowerCase())
+		.filter(Boolean);
+	// The tag that is being typed now (after the last comma).
+	const tagFragment = (tagParts[tagParts.length - 1] ?? "").trim().toLowerCase().replace(/^#/, "");
+	const tagSuggestions = existingTags
+		.filter(
+			({ tag }) =>
+				!typedTags.includes(tag.toLowerCase()) &&
+				(tagFragment === "" || tag.toLowerCase().includes(tagFragment))
+		)
+		.slice(0, 8);
+
+	const addSuggestedTag = (tag: string) => {
+		const kept = tagParts
+			.slice(0, -1)
+			.map((item) => item.trim())
+			.filter(Boolean);
+
+		setPost({ ...post, tags: `${[...kept, tag].join(", ")}, ` });
+	};
+
 	return (
 		<section className="page_section_left w-full">
 			<Header
@@ -105,11 +146,9 @@ const Form: React.FC<FormProps> = ({
 					<span className="form_input_title">{t("description")}</span>
 
 					<textarea
-						required
 						className="form_input h-[100px] min-h-[50px]"
 						id="prompt-description"
 						maxLength={POST_LIMITS.descriptionMax}
-						minLength={POST_LIMITS.descriptionMin}
 						placeholder={t("descriptionPlaceholder")}
 						value={description}
 						onChange={(e) => setPost({ ...post, description: e.target.value })}
@@ -151,6 +190,25 @@ const Form: React.FC<FormProps> = ({
 					/>
 					{displayAnError("tags")}
 				</label>
+
+				{tagSuggestions.length > 0 && (
+					<div className="-mt-3 flex flex-wrap items-center gap-2">
+						<span className="text-xs text-mlt-dark-6">
+							{tagFragment ? t("tagSuggestions") : t("tagPopular")}
+						</span>
+
+						{tagSuggestions.map(({ tag, count }) => (
+							<button
+								key={tag}
+								className="post_button bg-white text-sm text-mlt-dark-4"
+								type="button"
+								onClick={() => addSuggestedTag(tag)}
+							>
+								{tag} <span className="text-xs text-mlt-dark-6">({count})</span>
+							</button>
+						))}
+					</div>
+				)}
 
 				<div>
 					<span className="form_input_title">{t("sharePlatforms")}</span>

@@ -18,7 +18,7 @@ const PostSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: User,
 		},
-		// The old posts do not have title and description.
+		// The old posts do not have title. The description is optional.
 		title: {
 			type: String,
 			trim: true,
@@ -35,11 +35,6 @@ const PostSchema = new Schema(
 		description: {
 			type: String,
 			trim: true,
-			required: [true, "Description is required!"],
-			minlength: [
-				POST_LIMITS.descriptionMin,
-				`Description must have at least ${POST_LIMITS.descriptionMin} characters!`,
-			],
 			maxlength: [
 				POST_LIMITS.descriptionMax,
 				`Description can have up to ${POST_LIMITS.descriptionMax} characters!`,
@@ -62,7 +57,10 @@ const PostSchema = new Schema(
 					value.length >= 1 &&
 					value.length <= POST_LIMITS.tagsMax &&
 					value.every(
-						(tag) => typeof tag === "string" && tag.length <= POST_LIMITS.tagMaxLength
+						(tag) =>
+							typeof tag === "string" &&
+							tag.length >= 1 &&
+							tag.length <= POST_LIMITS.tagMaxLength
 					),
 				message: `Use 1-${POST_LIMITS.tagsMax} tags, each up to ${POST_LIMITS.tagMaxLength} characters!`,
 			},

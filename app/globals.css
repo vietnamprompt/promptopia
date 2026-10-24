@@ -405,7 +405,7 @@ body {
 
 /* Form Component */
 .form_input_title {
-	@apply font-Unicephalon font-semibold text-base text-mlt-dark-6;
+	@apply font-inter font-semibold text-base text-mlt-dark-6;
 }
 
 .form_input {

@@ -3,7 +3,15 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
+import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
+import {
+	SOCIAL_CONFIG,
+	SOCIAL_LINK_MAX,
+	SOCIAL_PLATFORMS,
+	SocialPlatform,
+} from "@/interfaces/SocialLinks";
 import { NAME_MAX, USERNAME_MAX, USERNAME_MIN, validateUsername } from "@/lib/profile-rules";
+import { normalizeSocialLink } from "@/lib/social-links";
 
 interface OwnProfile {
 	_id: string;
@@ -13,11 +21,13 @@ interface OwnProfile {
 	usernameChosen: boolean;
 	image?: string;
 	showEmail: boolean;
+	socialLinks?: Record<string, string>;
 }
 
 interface Message {
 	kind: "ok" | "error";
 	key: string; // "Profile.saved" or "Profile.errors.<key>"
+	platform?: SocialPlatform; // the link that has the problem
 }
 
 function loadImage(file: File): Promise<HTMLImageElement> {
@@ -75,10 +85,13 @@ async function resizeToSquareJpeg(file: File, size = 256): Promise<Blob> {
 
 const ProfileSettings: React.FC = () => {
 	const t = useTranslations("Profile");
+	const { session } = usePromptopiaContext();
+	const isAdmin = !!session?.user?.isAdmin;
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [profile, setProfile] = useState<OwnProfile | null>(null);
 	const [name, setName] = useState("");
 	const [showEmail, setShowEmail] = useState(false);
+	const [links, setLinks] = useState<Record<string, string>>({});
 	const [username, setUsername] = useState("");
 	const [busy, setBusy] = useState(false);
 	const [message, setMessage] = useState<Message | null>(null);
@@ -96,6 +109,8 @@ const ProfileSettings: React.FC = () => {
 			setProfile(user);
 			setName(user.name ?? "");
 			setShowEmail(!!user.showEmail);
+			setLinks(user.socialLinks ?? {});
+			setUsername(user.usernameChosen ? user.username : "");
 		} catch (error) {
 			console.error(error);
 		}
@@ -113,8 +128,11 @@ const ProfileSettings: React.FC = () => {
 
 	const showError = async (response: Response) => {
 		const data = await response.json().catch(() => ({}));
+		const field = (SOCIAL_PLATFORMS as readonly string[]).includes(data?.field)
+			? (data.field as SocialPlatform)
+			: undefined;
 
-		setMessage({ kind: "error", key: data?.errorKey ?? "generic" });
+		setMessage({ kind: "error", key: data?.errorKey ?? "generic", platform: field });
 	};
 
 	const send = async (body: Record<string, unknown>) => {
@@ -150,20 +168,31 @@ const ProfileSettings: React.FC = () => {
 			return;
 		}
 
-		send({ name: cleanName, showEmail });
+		const cleanLinks: Record<string, string> = {};
+
+		for (let i = 0; i < SOCIAL_PLATFORMS.length; i++) {
+			const platform = SOCIAL_PLATFORMS[i];
+			const result = normalizeSocialLink(platform, links[platform] ?? "");
+
+			if ("error" in result) {
+				setMessage({ kind: "error", key: "socialLinkInvalid", platform });
+
+				return;
+			}
+
+			cleanLinks[platform] = result.value;
+		}
+
+		send({ name: cleanName, showEmail, socialLinks: cleanLinks });
 	};
 
 	const handleSaveUsername = () => {
 		const value = username.trim().toLowerCase();
-		const invalid = validateUsername(value);
+		const invalid = validateUsername(value, { allowReserved: isAdmin });
 
 		if (invalid) {
 			setMessage({ kind: "error", key: invalid });
 
-			return;
-		}
-
-		if (!window.confirm(t("usernameConfirm", { username: value }))) {
 			return;
 		}
 
@@ -208,6 +237,8 @@ const ProfileSettings: React.FC = () => {
 	if (!profile) {
 		return null;
 	}
+
+	const currentUsername = profile.usernameChosen ? profile.username : "";
 
 	return (
 		<div className="glassmorphism mt-8 flex w-full max-w-2xl flex-col gap-6">
@@ -273,6 +304,31 @@ const ProfileSettings: React.FC = () => {
 			</div>
 
 			<div>
+				<p className="form_input_title">{t("links")}</p>
+				<p className="mt-1 text-xs text-mlt-dark-6">{t("linksHint")}</p>
+
+				<div className="mt-3 grid gap-3 sm:grid-cols-2">
+					{SOCIAL_PLATFORMS.map((platform) => (
+						<label
+							key={platform}
+							className="flex flex-col text-sm text-mlt-dark-4"
+							htmlFor={`social-${platform}`}
+						>
+							{SOCIAL_CONFIG[platform].label}
+							<input
+								className="form_input !mt-1"
+								id={`social-${platform}`}
+								maxLength={SOCIAL_LINK_MAX}
+								placeholder={SOCIAL_CONFIG[platform].example}
+								value={links[platform] ?? ""}
+								onChange={(e) => setLinks({ ...links, [platform]: e.target.value })}
+							/>
+						</label>
+					))}
+				</div>
+			</div>
+
+			<div>
 				<button
 					className="_btn orange_invert"
 					disabled={busy}
@@ -288,34 +344,29 @@ const ProfileSettings: React.FC = () => {
 					<span className="form_input_title">{t("username")}</span>
 				</label>
 
-				{profile.usernameChosen ? (
-					<>
-						<p className="mt-1 text-sm text-mlt-dark-4">@{profile.username}</p>
-						<p className="mt-1 text-xs text-mlt-dark-6">{t("usernameFixed")}</p>
-					</>
-				) : (
-					<>
-						<input
-							className="form_input"
-							id="profile-username"
-							maxLength={USERNAME_MAX}
-							placeholder={t("usernamePlaceholder")}
-							value={username}
-							onChange={(e) => setUsername(e.target.value.toLowerCase())}
-						/>
-						<p className="mt-1 text-xs text-mlt-dark-6">
-							{t("usernameHint", { min: USERNAME_MIN, max: USERNAME_MAX })}
-						</p>
-						<button
-							className="_btn gray_heavy_invert mt-3"
-							disabled={busy || !username}
-							type="button"
-							onClick={handleSaveUsername}
-						>
-							{t("saveUsername")}
-						</button>
-					</>
+				{!profile.usernameChosen && (
+					<p className="mt-1 text-xs text-mlt-dark-6">{t("usernameNotChosen")}</p>
 				)}
+
+				<input
+					className="form_input"
+					id="profile-username"
+					maxLength={USERNAME_MAX}
+					placeholder={t("usernamePlaceholder")}
+					value={username}
+					onChange={(e) => setUsername(e.target.value.toLowerCase())}
+				/>
+				<p className="mt-1 text-xs text-mlt-dark-6">
+					{t("usernameHint", { min: USERNAME_MIN, max: USERNAME_MAX })}
+				</p>
+				<button
+					className="_btn gray_heavy_invert mt-3"
+					disabled={busy || !username || username === currentUsername}
+					type="button"
+					onClick={handleSaveUsername}
+				>
+					{t("saveUsername")}
+				</button>
 			</div>
 
 			{message && (
@@ -324,7 +375,12 @@ const ProfileSettings: React.FC = () => {
 						message.kind === "ok" ? "text-green-600" : "text-red-600"
 					}`}
 				>
-					{message.kind === "ok" ? t("saved") : t(`errors.${message.key}`)}
+					{message.kind === "ok"
+						? t("saved")
+						: t(`errors.${message.key}`, {
+							  platform: message.platform ? SOCIAL_CONFIG[message.platform].label : "",
+							  example: message.platform ? SOCIAL_CONFIG[message.platform].example : "",
+						  })}
 				</p>
 			)}
 		</div>

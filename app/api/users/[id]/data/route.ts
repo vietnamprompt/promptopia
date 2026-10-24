@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { getPublicUsername } from "@/lib/public-user";
+import { cleanSocialLinks } from "@/lib/social-links";
 import User from "@/models/user";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +46,7 @@ export async function GET(request: NextRequest, { params }: Context) {
 				image: user.image,
 				description: user.description,
 				email: user.showEmail ? user.email : undefined,
+				socialLinks: cleanSocialLinks(user.socialLinks),
 			},
 			{ status: 200 }
 		);

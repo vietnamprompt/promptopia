@@ -30,7 +30,11 @@ export type UsernameError =
 	| "usernameReserved";
 
 // Returns the key of the error message (see "Profile.errors" in messages/en.json) or null if it is valid.
-export function validateUsername(value: string): UsernameError | null {
+// The reserved usernames (admin, root...) can be used only by the admins ("allowReserved").
+export function validateUsername(
+	value: string,
+	options: { allowReserved?: boolean } = {}
+): UsernameError | null {
 	if (value.length < USERNAME_MIN || value.length > USERNAME_MAX) {
 		return "usernameLength";
 	}
@@ -44,7 +48,7 @@ export function validateUsername(value: string): UsernameError | null {
 		return "usernameEdges";
 	}
 
-	if (RESERVED_USERNAMES.includes(value)) {
+	if (!options.allowReserved && RESERVED_USERNAMES.includes(value)) {
 		return "usernameReserved";
 	}
 

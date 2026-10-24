@@ -106,6 +106,7 @@ export function preparePostBodyToUpload({
 		tags: String(post.tags)
 			.split(",")
 			.map((tag) => tag.trim().toLowerCase())
+			.filter(Boolean)
 			.filter((value, index, array) => array.indexOf(value) === index)
 			.sort((a, b) => a.localeCompare(b)),
 		// https://stackoverflow.com/a/14438954/6543935

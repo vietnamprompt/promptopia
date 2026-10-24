@@ -2,6 +2,8 @@
 // Ref. regexp: https://gist.githubusercontent.com/adrianhajdin/6df61c6cd5ed052dce814a765bff9032/raw/3964dff2483e7aded3c567df1fb0b3f90a74b0aa/user.js
 import { Schema, model, models } from "mongoose";
 
+import { SOCIAL_LINK_MAX } from "@/interfaces/SocialLinks";
+
 const UserSchema = new Schema({
 	email: {
 		type: String,
@@ -38,6 +40,19 @@ const UserSchema = new Schema({
 	},
 	description: {
 		type: String,
+	},
+	// The links to the website and to the social networks (see '@/interfaces/SocialLinks.ts').
+	socialLinks: {
+		website: { type: String, maxlength: SOCIAL_LINK_MAX },
+		facebook: { type: String, maxlength: SOCIAL_LINK_MAX },
+		x: { type: String, maxlength: SOCIAL_LINK_MAX },
+		zalo: { type: String, maxlength: SOCIAL_LINK_MAX },
+		instagram: { type: String, maxlength: SOCIAL_LINK_MAX },
+		tiktok: { type: String, maxlength: SOCIAL_LINK_MAX },
+		youtube: { type: String, maxlength: SOCIAL_LINK_MAX },
+		threads: { type: String, maxlength: SOCIAL_LINK_MAX },
+		telegram: { type: String, maxlength: SOCIAL_LINK_MAX },
+		github: { type: String, maxlength: SOCIAL_LINK_MAX },
 	},
 });
 
