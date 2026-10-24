@@ -84,7 +84,8 @@
     "morePromptNumber": "Prompt {n}",
     "morePromptTitle": "Title of the prompt",
     "morePromptTitlePlaceholder": "Title of this prompt (i.e. Step 2: ...)",
-    "removePrompt": "Remove this prompt"
+    "removePrompt": "Remove this prompt",
+    "titleCaseHint": "Titles in capital letters are changed to normal text. Only the beginning of a sentence and the proper nouns keep the capital letter."
   },
   "Feed": {
     "searchForPlaceholder": "Search a prompt, #tag or @author",
@@ -285,7 +286,9 @@
       "heroHint": "The big text at the top of the homepage (the same for both languages). Leave a field empty to use the default text.",
       "heroLine1": "Heading, first line (black)",
       "heroLine2": "Heading, second line (colored)",
-      "heroDescription": "Description under the heading"
+      "heroDescription": "Description under the heading",
+      "properNouns": "Proper nouns",
+      "properNounsHint": "One per line, written in the right form (i.e. ChatGPT, Hà Nội). When a title with only capital letters is corrected, these words keep their capital letters. The common brands (AI, ChatGPT, Google, Việt Nam...) are already included."
     },
     "stats": {
       "members": "Members",

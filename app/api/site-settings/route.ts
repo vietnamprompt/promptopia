@@ -78,6 +78,12 @@ export async function PUT(request: NextRequest) {
 				SETTINGS_LIMITS.autoApproveMax,
 				Math.max(0, Math.floor(Number(body.autoApproveAfter) || 0))
 			),
+			properNouns: String(body.properNouns ?? "")
+				.split(/[\n,]+/)
+				.map((word) => word.trim())
+				.filter(Boolean)
+				.join("\n")
+				.slice(0, SETTINGS_LIMITS.properNouns),
 			// One word or phrase per line (the commas also separate the words).
 			bannedWords: String(body.bannedWords ?? "")
 				.split(/[\n,]+/)

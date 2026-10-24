@@ -25,6 +25,8 @@ export interface SiteSettings {
 	autoApproveAfter: number;
 	// The words that are not allowed in the posts and in the profiles, one per line.
 	bannedWords: string;
+	// Proper nouns (one per line) that keep their capital letters when an ALL-CAPS title is corrected.
+	properNouns: string;
 	seo: Record<SeoLocale, SeoText>;
 	logoUrl: string | null; // null = the default logo
 }
@@ -37,6 +39,7 @@ export const SETTINGS_LIMITS = {
 	googleVerification: 120,
 	announcement: 200,
 	bannedWords: 3000,
+	properNouns: 2000,
 	autoApproveMax: 100,
 	title: 70,
 	description: 300,
@@ -55,6 +58,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
 	announcementText: "",
 	autoApproveAfter: 0,
 	bannedWords: "",
+	properNouns: "",
 	seo: {
 		en: { title: "", description: "", keywords: "" },
 		vi: { title: "", description: "", keywords: "" },
@@ -73,6 +77,7 @@ interface StoredSettings {
 	announcementText?: string;
 	autoApproveAfter?: number;
 	bannedWords?: string;
+	properNouns?: string;
 	seo?: Partial<Record<SeoLocale, Partial<SeoText>>>;
 	logoVersion?: number;
 }
@@ -97,6 +102,7 @@ export function normalizeSettings(doc?: StoredSettings | null): SiteSettings {
 		announcementText: doc?.announcementText ?? "",
 		autoApproveAfter: Math.max(0, Math.floor(Number(doc?.autoApproveAfter) || 0)),
 		bannedWords: doc?.bannedWords ?? "",
+		properNouns: doc?.properNouns ?? "",
 		seo: { en: seoOf("en"), vi: seoOf("vi") },
 		logoUrl: doc?.logoVersion ? `/api/site-settings/logo?v=${doc.logoVersion}` : null,
 	};

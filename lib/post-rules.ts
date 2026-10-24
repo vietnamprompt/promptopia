@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { PostStatus } from "@/interfaces/Post";
+import { MorePrompt, PostStatus } from "@/interfaces/Post";
+import { normalizeMorePrompts } from "@/lib/more-prompts";
+import { fixShoutingTitle } from "@/lib/title-case";
 import { getSiteSettings } from "@/lib/site-settings";
 import Post from "@/models/post";
 import User from "@/models/user";
@@ -46,6 +48,24 @@ export function findBannedWord(fields: Record<string, unknown>, bannedWords: str
 	}
 
 	return null;
+}
+
+/** A title with only capital letters is changed to a normal sentence (see 'lib/title-case.ts'). */
+export async function fixTitle(title: unknown) {
+	const { properNouns } = await getSiteSettings();
+
+	return fixShoutingTitle(String(title ?? ""), properNouns.split("\n"));
+}
+
+/** The additional prompts of a post: only the valid ones, with the titles corrected. */
+export async function cleanMorePrompts(value: unknown): Promise<MorePrompt[]> {
+	const { properNouns } = await getSiteSettings();
+	const nouns = properNouns.split("\n");
+
+	return normalizeMorePrompts(value).map((item) => ({
+		...item,
+		title: fixShoutingTitle(item.title, nouns),
+	}));
 }
 
 export async function checkBannedWords(fields: Record<string, unknown>) {

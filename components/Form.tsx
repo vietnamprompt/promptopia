@@ -134,6 +134,7 @@ const Form: React.FC<FormProps> = ({
 					<span className="text-xs text-mlt-dark-6">
 						{title.length} / {POST_LIMITS.titleMax}
 					</span>
+					<span className="mt-1 block text-xs text-mlt-dark-6">{t("titleCaseHint")}</span>
 					{displayAnError("title")}
 				</label>
 

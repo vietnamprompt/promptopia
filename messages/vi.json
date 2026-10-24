@@ -84,7 +84,8 @@
     "morePromptNumber": "Prompt {n}",
     "morePromptTitle": "Tiêu đề của prompt",
     "morePromptTitlePlaceholder": "Tiêu đề của prompt này (ví dụ: Bước 2: ...)",
-    "removePrompt": "Xóa prompt này"
+    "removePrompt": "Xóa prompt này",
+    "titleCaseHint": "Tiêu đề viết hoa toàn bộ sẽ tự chuyển về chữ thường, chỉ chữ đầu câu và danh từ riêng được viết hoa."
   },
   "Feed": {
     "searchForPlaceholder": "Tìm prompt, #thẻ hoặc @tác giả",
@@ -285,7 +286,9 @@
       "heroHint": "Dòng chữ lớn ở đầu trang chủ (dùng chung cho cả hai ngôn ngữ). Để trống ô nào thì dùng nội dung mặc định.",
       "heroLine1": "Tiêu đề, dòng 1 (màu đen)",
       "heroLine2": "Tiêu đề, dòng 2 (màu chuyển sắc)",
-      "heroDescription": "Mô tả bên dưới tiêu đề"
+      "heroDescription": "Mô tả bên dưới tiêu đề",
+      "properNouns": "Danh từ riêng",
+      "properNounsHint": "Mỗi dòng một từ, viết đúng dạng chuẩn (ví dụ ChatGPT, Hà Nội). Khi sửa tiêu đề viết hoa toàn bộ, các từ này giữ nguyên chữ hoa. Các tên thông dụng (AI, ChatGPT, Google, Việt Nam...) đã có sẵn."
     },
     "stats": {
       "members": "Thành viên",

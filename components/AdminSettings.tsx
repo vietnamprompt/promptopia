@@ -338,6 +338,19 @@ const AdminSettings: React.FC = () => {
 				<span className="mt-1 block text-xs text-mlt-dark-6">{t("footerHint")}</span>
 			</label>
 
+			<label htmlFor="proper-nouns">
+				<span className="form_input_title">{t("properNouns")}</span>
+				<textarea
+					className="form_input form_textarea"
+					id="proper-nouns"
+					maxLength={SETTINGS_LIMITS.properNouns}
+					rows={4}
+					value={settings.properNouns}
+					onChange={(e) => update({ properNouns: e.target.value })}
+				/>
+				<span className="mt-1 block text-xs text-mlt-dark-6">{t("properNounsHint")}</span>
+			</label>
+
 			<div>
 				<p className="form_input_title">{t("autoApprove")}</p>
 				<p className="mt-1 text-xs text-mlt-dark-6">{t("autoApproveHint")}</p>

@@ -19,6 +19,7 @@ const SiteSettingsSchema = new Schema({
 	announcementText: { type: String },
 	autoApproveAfter: { type: Number, default: 0 },
 	bannedWords: { type: String },
+	properNouns: { type: String },
 	seo: {
 		en: SeoSchema,
 		vi: SeoSchema,

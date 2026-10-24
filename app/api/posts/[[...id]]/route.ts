@@ -19,7 +19,13 @@ import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
 import { normalizeMorePrompts } from "@/lib/more-prompts";
-import { bannedPostResponse, checkBannedWords, decidePostStatus } from "@/lib/post-rules";
+import {
+	bannedPostResponse,
+	checkBannedWords,
+	cleanMorePrompts,
+	decidePostStatus,
+	fixTitle,
+} from "@/lib/post-rules";
 import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import { normalizeSharePlatforms } from "@/interfaces/SharePlatform";
 import { addSavedCounts } from "@/lib/engagement";
@@ -122,11 +128,11 @@ export async function POST(request: NextRequest) {
 		// The creator and the status are never taken from the request body.
 		const newPost = new Post({
 			creator: userId,
-			title,
+			title: await fixTitle(title),
 			description,
 			sharePlatforms: normalizeSharePlatforms(sharePlatforms),
 			prompt,
-			morePrompts: normalizeMorePrompts(morePrompts),
+			morePrompts: await cleanMorePrompts(morePrompts),
 			tags,
 			aiCategory,
 			link,
@@ -190,11 +196,11 @@ async function updatePost(request: NextRequest, { params }: Context) {
 
 		// An edited post must be approved again by an admin (unless the creator is an admin or is trusted).
 		post.set({
-			title,
+			title: await fixTitle(title),
 			description,
 			sharePlatforms: normalizeSharePlatforms(sharePlatforms),
 			prompt,
-			morePrompts: normalizeMorePrompts(morePrompts),
+			morePrompts: await cleanMorePrompts(morePrompts),
 			tags,
 			aiCategory,
 			link,
