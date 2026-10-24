@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { signIn, signOut } from "next-auth/react";
@@ -25,6 +25,9 @@ const Nav: React.FC = () => {
 	const { siteName, logoUrl } = useSiteSettings();
 	const [toggleDropDown, setToggleDropDown] = useState(false);
 	const pathName = usePathname();
+	const locale = useLocale();
+	// The logo opens the homepage in the current language ("/en" or "/vi").
+	const homeHref = `/${locale}`;
 	const { isBelowSm } = useBreakpoint("sm");
 
 	const openMobileNavBar = () => {
@@ -101,7 +104,7 @@ const Nav: React.FC = () => {
 		<nav className="flex justify-between items-center w-full mb-16 pt-4 sm:pt-8 h-16">
 			<Link
 				className="flex justify-center items-center gap-1 hover:drop-shadow-md transition-all duration-300"
-				href={pathName === Path.HOME ? `${Path.HOME}?wipe=true` : Path.HOME}
+				href={pathName === homeHref ? `${homeHref}?wipe=true` : homeHref}
 			>
 				<Image
 					unoptimized
