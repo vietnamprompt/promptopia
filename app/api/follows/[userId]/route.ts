@@ -19,7 +19,11 @@ interface Context {
 	params: { userId: string };
 }
 
-async function getIds(params: Context["params"]) {
+type Ids =
+	| { error: NextResponse; me?: undefined; target?: undefined }
+	| { error?: undefined; me: string; target: string };
+
+async function getIds(params: Context["params"]): Promise<Ids> {
 	const session = await getServerSession(authOptions);
 	const me = session?.user?.id;
 	const target = params?.userId;

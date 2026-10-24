@@ -25,12 +25,12 @@ export async function GET() {
 	try {
 		await connectToMongoDb();
 
-		const rows = await Save.find({ user: userId }).select("post").limit(5000).lean();
+		const rows = (await Save.find({ user: userId })
+			.select("post")
+			.limit(5000)
+			.lean()) as unknown as { post: unknown }[];
 
-		return NextResponse.json(
-			{ ids: rows.map((row: { post: unknown }) => String(row.post)) },
-			{ status: 200 }
-		);
+		return NextResponse.json({ ids: rows.map((row) => String(row.post)) }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ ids: [] }, { status: 500 });
 	}

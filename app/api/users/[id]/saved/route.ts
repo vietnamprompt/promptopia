@@ -47,11 +47,11 @@ export async function GET(request: NextRequest, { params }: Context) {
 			}
 		}
 
-		const saves: { post: unknown }[] = await Save.find({ user: userId })
+		const saves = (await Save.find({ user: userId })
 			.sort({ createdAt: -1 })
 			.limit(LIST_LIMIT)
 			.select("post")
-			.lean();
+			.lean()) as unknown as { post: unknown }[];
 
 		const order = saves.map((save) => String(save.post));
 		const posts = await Post.find({
@@ -60,11 +60,12 @@ export async function GET(request: NextRequest, { params }: Context) {
 		}).populate(POST_POPULATE);
 
 		// The newest saved first.
-		const sorted = posts
-			.map(toPublicPost)
+		const sorted = (posts as unknown[])
+			.map((post) => toPublicPost(post))
 			.sort(
-				(a: { _id?: unknown }, b: { _id?: unknown }) =>
-					order.indexOf(String(a._id)) - order.indexOf(String(b._id))
+				(a, b) =>
+					order.indexOf(String((a as { _id?: unknown })._id)) -
+					order.indexOf(String((b as { _id?: unknown })._id))
 			);
 
 		return NextResponse.json({ posts: await addSavedCounts(sorted) }, { status: 200 });

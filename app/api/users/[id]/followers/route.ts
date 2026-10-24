@@ -37,9 +37,9 @@ export async function GET(request: NextRequest, { params }: Context) {
 			Follow.countDocuments({ following: userId }),
 		]);
 
-		const users = rows
-			.map((row: { follower?: { toObject: () => object } | null }) =>
-				row.follower ? toPublicUser(row.follower.toObject()) : null
+		const users = (rows as unknown as { follower?: { toObject: () => unknown } | null }[])
+			.map((row) =>
+				row.follower ? toPublicUser(row.follower.toObject() as Parameters<typeof toPublicUser>[0]) : null
 			)
 			.filter(Boolean);
 
