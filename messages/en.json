@@ -79,7 +79,12 @@
       "update": "Update",
       "delete": "Delete",
       "edit": "Edit"
-    }
+    },
+    "addPrompt": "+ Prompt",
+    "morePromptNumber": "Prompt {n}",
+    "morePromptTitle": "Title of the prompt",
+    "morePromptTitlePlaceholder": "Title of this prompt (i.e. Step 2: ...)",
+    "removePrompt": "Remove this prompt"
   },
   "Feed": {
     "searchForPlaceholder": "Search a prompt, #tag or @author",
@@ -135,7 +140,11 @@
       "approved": "Published",
       "rejected": "Rejected - not visible on the homepage"
     },
-    "copyCount": "Copied {count} times"
+    "copyCount": "Copied {count} times",
+    "promptsCount": "{count} prompts",
+    "showAllPrompts": "Show all prompts",
+    "showLess": "Show less",
+    "copyAll": "Copy all"
   },
   "CreatePost": {
     "imageSizeError": "Image size is too large. Maximum allowed size is 128KB.",

@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { FormProps, FormTypes } from "@/interfaces/Form";
-import { POST_LIMITS, PostTypeFromDb } from "@/interfaces/Post";
+import { MorePrompt, POST_LIMITS, PostTypeFromDb } from "@/interfaces/Post";
 import { SharePlatform, SHARE_PLATFORMS } from "@/interfaces/SharePlatform";
 
 import { Path } from "@/interfaces/Path";
@@ -35,6 +35,25 @@ const Form: React.FC<FormProps> = ({
 	const title = post.title ?? "";
 	const description = post.description ?? "";
 	const selectedPlatforms: SharePlatform[] = post.sharePlatforms ?? [];
+	const morePrompts = post.morePrompts ?? [];
+
+	// The additional prompts keep the order of typing (the new one is added at the end).
+	const addMorePrompt = () => {
+		if (morePrompts.length < POST_LIMITS.morePromptsMax) {
+			setPost({ ...post, morePrompts: [...morePrompts, { title: "", prompt: "" }] });
+		}
+	};
+
+	const changeMorePrompt = (index: number, patch: Partial<MorePrompt>) => {
+		setPost({
+			...post,
+			morePrompts: morePrompts.map((item, i) => (i === index ? { ...item, ...patch } : item)),
+		});
+	};
+
+	const removeMorePrompt = (index: number) => {
+		setPost({ ...post, morePrompts: morePrompts.filter((_, i) => i !== index) });
+	};
 
 	const toggleSharePlatform = (platform: SharePlatform) => {
 		setPost({
@@ -152,6 +171,59 @@ const Form: React.FC<FormProps> = ({
 					</span>
 					{displayAnError("prompt")}
 				</label>
+
+				{morePrompts.map((item, index) => (
+					<div
+						// The prompts keep the order of typing, the index is the identity.
+						// eslint-disable-next-line react/no-array-index-key
+						key={index}
+						className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white/60 p-4"
+					>
+						<div className="flex items-center justify-between gap-3">
+							<span className="form_input_title">{t("morePromptNumber", { n: index + 2 })}</span>
+
+							<button
+								className="text-sm text-red-600 hover:underline"
+								type="button"
+								onClick={() => removeMorePrompt(index)}
+							>
+								{t("removePrompt")}
+							</button>
+						</div>
+
+						<input
+							required
+							aria-label={t("morePromptTitle")}
+							className="form_input !mt-0"
+							maxLength={POST_LIMITS.morePromptTitleMax}
+							placeholder={t("morePromptTitlePlaceholder")}
+							value={item.title}
+							onChange={(e) => changeMorePrompt(index, { title: e.target.value })}
+						/>
+
+						<textarea
+							required
+							aria-label={t("yourPrompt")}
+							className="form_input form_textarea !mt-0"
+							maxLength={POST_LIMITS.promptMax}
+							placeholder={t("yourPromptPlaceholder")}
+							value={item.prompt}
+							onChange={(e) => changeMorePrompt(index, { prompt: e.target.value })}
+						/>
+						<span className="text-xs text-mlt-dark-6">
+							{item.prompt.length} / {POST_LIMITS.promptMax}
+						</span>
+					</div>
+				))}
+
+				<div className="-mt-3 flex flex-col items-start gap-1">
+					{morePrompts.length < POST_LIMITS.morePromptsMax && (
+						<button className="_btn gray_light" type="button" onClick={addMorePrompt}>
+							{t("addPrompt")}
+						</button>
+					)}
+					{displayAnError("morePrompts")}
+				</div>
 
 				<label htmlFor="prompt-tag">
 					<span className="form_input_title">{t("tags")}</span>

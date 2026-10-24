@@ -91,18 +91,31 @@ const PostCard: React.FC<PostCardProps> = ({
 		}
 	};
 
-	const handlePromptCopy = () => {
+	const copyText = (text: string) => {
 		if (setCopied === undefined) {
 			return;
 		}
 
-		setCopied(post.prompt);
-		navigator.clipboard.writeText(post.prompt);
+		setCopied(text);
+		navigator.clipboard.writeText(text);
 		countCopy();
 		setTimeout(() => {
 			setCopied("");
 		}, 3500);
 	};
+
+	const handlePromptCopy = () => copyText(post.prompt);
+
+	// A post can have more prompts after the first one (a chain). The card shows only the first
+	// prompt, the button "Show all prompts" opens the others.
+	const morePrompts = (post.morePrompts ?? []).filter((item) => item?.prompt);
+	const promptsTotal = 1 + morePrompts.length;
+	const [showAllPrompts, setShowAllPrompts] = useState(false);
+	const purple = isEditMode || isDelMode;
+
+	// All prompts in one text, separated by a line, for the visitors who paste them at once.
+	const copyAllPrompts = () =>
+		copyText([post.prompt, ...morePrompts.map((item) => item.prompt)].join("\n\n---\n\n"));
 
 	return (
 		<div className={`${isDelMode ? "post_card_del_mode" : "post_card"}`}>
@@ -256,6 +269,74 @@ const PostCard: React.FC<PostCardProps> = ({
 					</a>
 				)}
 			</div>
+
+			{morePrompts.length > 0 && (
+				<div className="mt-3 flex flex-wrap items-center gap-3">
+					<span className="rounded-full bg-white px-3 py-1 text-sm font-medium text-mlt-dark-4 shadow-sm">
+						{t("promptsCount", { count: promptsTotal })}
+					</span>
+
+					<button
+						aria-expanded={showAllPrompts}
+						className="text-sm font-medium text-mlt-orange-secondary hover:underline"
+						type="button"
+						onClick={() => setShowAllPrompts(!showAllPrompts)}
+					>
+						{showAllPrompts ? t("showLess") : t("showAllPrompts")}
+					</button>
+
+					{showAllPrompts && (
+						<button
+							className="text-sm font-medium text-mlt-dark-4 hover:underline"
+							type="button"
+							onClick={copyAllPrompts}
+						>
+							{t("copyAll")}
+						</button>
+					)}
+				</div>
+			)}
+
+			{showAllPrompts &&
+				morePrompts.map((item, index) => (
+					<div key={`${index}-${item.title}`} className="mt-6">
+						<h4 className="font-satoshi break-words text-base font-semibold text-mlt-dark-2">
+							{index + 2}. {item.title}
+						</h4>
+
+						<div className="post_card_prompt relative mt-3 !pl-5 !pt-5">
+							<IconEmbedSvgPop
+								bgColor={purple ? "bg-mlt-purple-secondary" : "bg-mlt-orange-secondary"}
+								c1={purple ? "mlt-purple-secondary" : "mlt-orange-secondary"}
+								c2={purple ? "mlt-purple-primary" : "mlt-orange-dark"}
+								height={20}
+								isActive={copied === item.prompt}
+								op1="84"
+								style={{
+									position: "absolute",
+									left: "-12px",
+									top: "-12px",
+									width: "36px",
+									height: "36px",
+									background: "#ffffff",
+									boxShadow: "0 1px 5px rgba(0, 0, 0, 0.22)",
+									zIndex: 3,
+								}}
+								text={t("altCopyPrompt")}
+								type={copied === item.prompt ? "clipboard-check" : "clipboard"}
+								width={20}
+								onClick={() => copyText(item.prompt)}
+							/>
+
+							<p
+								className="post_card_prompt_text max-h-[146px] whitespace-pre-wrap break-words"
+								onClick={() => copyText(item.prompt)}
+							>
+								{item.prompt}
+							</p>
+						</div>
+					</div>
+				))}
 
 			<SharePlatformButtons platforms={post.sharePlatforms} prompt={post.prompt} />
 

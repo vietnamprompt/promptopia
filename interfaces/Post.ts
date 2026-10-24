@@ -11,7 +11,16 @@ export const POST_LIMITS = {
 	promptMax: 5000,
 	tagsMax: 5,
 	tagMaxLength: 24,
+	// A post can have more prompts after the first one (a chain of prompts), each with a title.
+	morePromptsMax: 9,
+	morePromptTitleMax: 80,
 };
+
+// An additional prompt of a post: a title and the text, without description.
+export interface MorePrompt {
+	title: string;
+	prompt: string;
+}
 
 export interface PostType {
 	title: string;
@@ -21,6 +30,7 @@ export interface PostType {
 	link: string;
 	aiCategory: AiCategories;
 	sharePlatforms: SharePlatform[];
+	morePrompts?: MorePrompt[]; // the prompts after the first one, in the order of typing
 }
 
 export enum PostStatus {
@@ -60,6 +70,7 @@ export const postInit: PostType = {
 	aiCategory: AiCategories.CHAT,
 	link: "",
 	sharePlatforms: [],
+	morePrompts: [],
 };
 
 export const postFromDbInit: PostTypeFromDb = {

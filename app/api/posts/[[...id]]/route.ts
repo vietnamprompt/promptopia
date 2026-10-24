@@ -18,6 +18,7 @@ import { authOptions } from "@/lib/auth-options";
 import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import { normalizeMorePrompts } from "@/lib/more-prompts";
 import { bannedPostResponse, checkBannedWords, decidePostStatus } from "@/lib/post-rules";
 import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import { normalizeSharePlatforms } from "@/interfaces/SharePlatform";
@@ -101,12 +102,18 @@ export async function POST(request: NextRequest) {
 	}
 
 	try {
-		const { title, description, prompt, tags, aiCategory, link, image, sharePlatforms } =
+		const { title, description, prompt, tags, aiCategory, link, image, sharePlatforms, morePrompts } =
 			await request.json();
 
 		await connectToMongoDb();
 
-		const banned = await checkBannedWords({ title, description, prompt, tags });
+		const banned = await checkBannedWords({
+			title,
+			description,
+			prompt,
+			tags,
+			morePrompts: normalizeMorePrompts(morePrompts).map((item) => `${item.title} ${item.prompt}`),
+		});
 
 		if (banned) {
 			return bannedPostResponse(banned);
@@ -119,6 +126,7 @@ export async function POST(request: NextRequest) {
 			description,
 			sharePlatforms: normalizeSharePlatforms(sharePlatforms),
 			prompt,
+			morePrompts: normalizeMorePrompts(morePrompts),
 			tags,
 			aiCategory,
 			link,
@@ -152,12 +160,18 @@ async function updatePost(request: NextRequest, { params }: Context) {
 	}
 
 	try {
-		const { title, description, prompt, tags, aiCategory, link, image, sharePlatforms } =
+		const { title, description, prompt, tags, aiCategory, link, image, sharePlatforms, morePrompts } =
 			await request.json();
 
 		await connectToMongoDb();
 
-		const banned = await checkBannedWords({ title, description, prompt, tags });
+		const banned = await checkBannedWords({
+			title,
+			description,
+			prompt,
+			tags,
+			morePrompts: normalizeMorePrompts(morePrompts).map((item) => `${item.title} ${item.prompt}`),
+		});
 
 		if (banned) {
 			return bannedPostResponse(banned);
@@ -180,6 +194,7 @@ async function updatePost(request: NextRequest, { params }: Context) {
 			description,
 			sharePlatforms: normalizeSharePlatforms(sharePlatforms),
 			prompt,
+			morePrompts: normalizeMorePrompts(morePrompts),
 			tags,
 			aiCategory,
 			link,

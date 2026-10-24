@@ -94,7 +94,13 @@ export async function GET(request: NextRequest) {
 
 				creatorIds = creatorIds ? creatorIds.filter((id) => foundKeys.has(String(id))) : found;
 			} else {
-				match.$or = [{ prompt: regex }, { title: regex }, { description: regex }];
+				match.$or = [
+				{ prompt: regex },
+				{ title: regex },
+				{ description: regex },
+				{ "morePrompts.title": regex },
+				{ "morePrompts.prompt": regex },
+			];
 			}
 		}
 

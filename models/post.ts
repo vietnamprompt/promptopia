@@ -65,6 +65,36 @@ const PostSchema = new Schema(
 				message: `Use 1-${POST_LIMITS.tagsMax} tags, each up to ${POST_LIMITS.tagMaxLength} characters!`,
 			},
 		},
+		// The prompts after the first one. Every one has a title (no description).
+		morePrompts: {
+			type: [
+				new Schema(
+					{
+						title: {
+							type: String,
+							trim: true,
+							required: [true, "The title of the prompt is required!"],
+							maxlength: POST_LIMITS.morePromptTitleMax,
+						},
+						prompt: {
+							type: String,
+							required: [true, "Prompt is required!"],
+							maxlength: [
+								POST_LIMITS.promptMax,
+								`Prompt can have up to ${POST_LIMITS.promptMax} characters!`,
+							],
+						},
+					},
+					{ _id: false }
+				),
+			],
+			default: [],
+			validate: {
+				validator: (value: unknown) =>
+					Array.isArray(value) && value.length <= POST_LIMITS.morePromptsMax,
+				message: `A post can have up to ${POST_LIMITS.morePromptsMax + 1} prompts!`,
+			},
+		},
 		aiCategory: {
 			type: String, // actually it is a value of AiCategories
 			required: [true, "AI category type is required!"],

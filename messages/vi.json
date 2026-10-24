@@ -79,7 +79,12 @@
       "update": "Cập nhật",
       "delete": "Xóa",
       "edit": "Sửa"
-    }
+    },
+    "addPrompt": "+ Prompt",
+    "morePromptNumber": "Prompt {n}",
+    "morePromptTitle": "Tiêu đề của prompt",
+    "morePromptTitlePlaceholder": "Tiêu đề của prompt này (ví dụ: Bước 2: ...)",
+    "removePrompt": "Xóa prompt này"
   },
   "Feed": {
     "searchForPlaceholder": "Tìm prompt, #thẻ hoặc @tác giả",
@@ -135,7 +140,11 @@
       "approved": "Đã đăng",
       "rejected": "Bị từ chối - không hiện trên trang chủ"
     },
-    "copyCount": "Đã được copy {count} lần"
+    "copyCount": "Đã được copy {count} lần",
+    "promptsCount": "{count} prompt",
+    "showAllPrompts": "Xem đủ các prompt",
+    "showLess": "Thu gọn",
+    "copyAll": "Copy tất cả"
   },
   "CreatePost": {
     "imageSizeError": "Hình ảnh quá lớn. Dung lượng tối đa là 128KB.",
