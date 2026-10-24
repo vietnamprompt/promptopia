@@ -20,6 +20,7 @@
 import GoogleProvider from "next-auth/providers/google";
 // import CredentialsProvider from "next-auth/providers/credentials"; // For DB auth...
 
+import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 
 import User from "@/models/user";
@@ -49,6 +50,7 @@ export const authOptions: NextAuthOptions = {
 			session.user.accountProvider = sessionUser?.accountProvider;
 			session.user.username = sessionUser?.username;
 			session.user.description = sessionUser?.description;
+			session.user.isAdmin = isAdminEmail(session?.user?.email); // used only to show the Admin link
 
 			return session; // The return type will match the one returned in `useSession()`
 		},

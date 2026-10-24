@@ -37,7 +37,8 @@
 		"altLogo": "Promptopia.MLT Logo",
 
 		"altUserProfile": "User Profile",
-		"myProfile": "My Profile"
+		"myProfile": "My Profile",
+		"admin": "Admin"
 	},
 	"Home": {
 		"headingLn1": "Discover & Share",
@@ -74,6 +75,7 @@
 	},
 	"Feed": {
 		"searchForPlaceholder": "Search for a prompt, tag or user",
+		"empty": "There are no published prompts yet.",
 		"searchFor": {
 			"prompt": "Prompt",
 			"tag": "Tag",
@@ -89,7 +91,12 @@
 		"spamProtect": "@spam.protect",
 		"edit": "Edit",
 		"delete": "Delete",
-		"linkAreaLabel": "Link to the AI platform or source of the prompt"
+		"linkAreaLabel": "Link to the AI platform or source of the prompt",
+		"status": {
+			"pending": "Pending review - not visible on the homepage yet",
+			"approved": "Published",
+			"rejected": "Rejected - not visible on the homepage"
+		}
 	},
 	"CreatePost": {
 		"imageSizeError": "Image size is too large. Maximum allowed size is 128KB.",
@@ -103,11 +110,28 @@
 		"description": "Welcome to your profile page. Here you can see, edit or delete all your posts.",
 		"accountRemoveDisclaimer": "If you need to remove your account, please contact us at { email } and we will do it for you.",
 		"placeholderUser": "User...",
-		"placeholderUserDescription": "User description..."
+		"placeholderUserDescription": "User description...",
+		"moderationNote": "New and edited prompts appear on the homepage after they are approved by an admin."
 	},
 	"Footer": {
 		"projectDesc": "Check out the project at",
 		"projectDescShort": "See the project at",
 		"projectLink": "Link to the project repository"
+	},
+	"Admin": {
+		"title": "Moderation",
+		"description": "Approve or reject the new and the edited prompts. Only approved prompts are visible on the homepage.",
+		"tabs": {
+			"pending": "Pending",
+			"rejected": "Rejected",
+			"approved": "Approved"
+		},
+		"approve": "Approve",
+		"reject": "Reject",
+		"loading": "Loading...",
+		"empty": "There are no prompts in this list.",
+		"noAccess": "You do not have access to this page.",
+		"error": "Something went wrong, please try again.",
+		"changed": "The prompt was edited in the meantime, the list has been reloaded. Please review it again."
 	}
 }

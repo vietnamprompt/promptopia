@@ -5,4 +5,5 @@ export enum Path {
 	POST_CREATE = "/post-create",
 	POST_UPDATE = "/post-update",
 	POST_DELETE = "/post-delete",
+	ADMIN = "/admin",
 }

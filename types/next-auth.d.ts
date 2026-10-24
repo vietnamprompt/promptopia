@@ -11,6 +11,7 @@ declare module "next-auth" {
 			accountProvider: string;
 			description?: string;
 			username?: string;
+			isAdmin?: boolean;
 		} & DefaultSession["user"];
 	}
 

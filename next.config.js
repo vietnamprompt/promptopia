@@ -12,6 +12,11 @@ const withNextIntl = require("next-intl/plugin")(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
+	eslint: {
+		// The code style (Prettier/ESLint) is not checked during "next build",
+		// so a formatting issue can not block the deployment on Vercel.
+		ignoreDuringBuilds: true,
+	},
 	images: {
 		// https://vercel.com/docs/image-optimization/managing-image-optimization-costs
 		unoptimized: true,

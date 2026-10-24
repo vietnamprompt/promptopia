@@ -9,12 +9,20 @@ export interface PostType {
 	aiCategory: AiCategories;
 }
 
+export enum PostStatus {
+	PENDING = "pending",
+	APPROVED = "approved",
+	REJECTED = "rejected",
+}
+
 // Omit: https://stackoverflow.com/a/51507473/6543935
 export interface PostTypeFromDb extends Omit<PostType, "tags"> {
 	_id: string;
 	tags: string[];
 	creator: UserTypeFromDb;
 	image: GridFSFile;
+	status?: PostStatus; // missing in the old posts, they are handled as "pending"
+	updatedAt?: string;
 }
 
 export enum AiCategories {
