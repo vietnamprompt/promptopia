@@ -504,7 +504,7 @@ body {
 
 .post_card {
 	@apply flex-1 break-inside-avoid rounded-xl border-2 border-mlt-gray-5/80 bg-white/20 bg-clip-padding p-6 pb-4 backdrop-blur-lg backdrop-filter w-full h-fit 
-	drop-shadow-md shadow-[inset_10px_-50px_94px_0_rgb(176,123,255,0.1)]
+	shadow-[inset_10px_-50px_94px_0_rgb(176,123,255,0.1),0_1px_4px_0_rgb(0,0,0,0.14)]
 	mb-8 lg:mb-10 2xl:mb-12
 	transition-all;
 
@@ -524,7 +524,7 @@ body {
 .post_card_del_mode {
 	@apply flex-1 break-inside-avoid rounded-xl border-2 border-red-300/80 bg-white/20 bg-clip-padding p-6 pb-4 backdrop-blur-lg backdrop-filter w-full h-fit 
 	transition-all duration-300 
-	drop-shadow-md shadow-[inset_10px_-50px_94px_0_rgb(252,165,165,0.1)];
+	shadow-[inset_10px_-50px_94px_0_rgb(252,165,165,0.1),0_1px_4px_0_rgb(0,0,0,0.14)];
 
 	/* shadow-[inset_10px_-50px_94px_0_rgb(176,123,255,0.05)]
 	hover:shadow-[inset_10px_-50px_94px_0_rgb(176,123,255,0.15)]; */
