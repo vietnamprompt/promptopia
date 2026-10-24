@@ -18,7 +18,7 @@ interface Props {
 const ProfileTabs: React.FC<Props> = ({ userId, isOwner, showSaved, postsContent }) => {
 	const t = useTranslations("ProfileTabs");
 	const [active, setActive] = useState<TabKey>("posts");
-	const [counts, setCounts] = useState<{ followers?: number; following?: number }>({});
+	const [counts, setCounts] = useState<{ posts?: number; followers?: number; following?: number; saved?: number }>({});
 
 	// The numbers in the names of the tabs.
 	useEffect(() => {
@@ -30,7 +30,12 @@ const ProfileTabs: React.FC<Props> = ({ userId, isOwner, showSaved, postsContent
 				const data = await response.json();
 
 				if (alive) {
-					setCounts({ followers: data.followersCount, following: data.followingCount });
+					setCounts({
+							posts: data.postsCount,
+							followers: data.followersCount,
+							following: data.followingCount,
+							saved: data.savedCount,
+						});
 				}
 			} catch (error) {
 				console.error(error);
@@ -46,10 +51,10 @@ const ProfileTabs: React.FC<Props> = ({ userId, isOwner, showSaved, postsContent
 		typeof count === "number" ? `${label} (${count})` : label;
 
 	const tabs: { key: TabKey; label: string }[] = [
-		{ key: "posts", label: t("posts") },
+		{ key: "posts", label: withCount(t("posts"), counts.posts) },
 		{ key: "followers", label: withCount(t("followers"), counts.followers) },
 		{ key: "following", label: withCount(t("following"), counts.following) },
-		...(showSaved ? [{ key: "saved" as TabKey, label: t("saved") }] : []),
+		...(showSaved ? [{ key: "saved" as TabKey, label: withCount(t("saved"), counts.saved) }] : []),
 	];
 
 	return (

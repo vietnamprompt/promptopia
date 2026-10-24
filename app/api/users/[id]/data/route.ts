@@ -2,7 +2,14 @@
  * @check the differences with '@/api/posts/[[...id]]/route.ts'
  */
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import mongoose from "mongoose";
+
+import { authOptions } from "@/lib/auth-options";
+import { isAdminEmail } from "@/lib/admin";
+import { PostStatus } from "@/interfaces/Post";
+import Post from "@/models/post";
+import Save from "@/models/save";
 
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { toPublicProfile } from "@/lib/public-profile";
@@ -37,7 +44,32 @@ export async function GET(request: NextRequest, { params }: Context) {
 			return failed();
 		}
 
-		return NextResponse.json(await toPublicProfile(user), { status: 200 });
+		const profile = await toPublicProfile(user);
+
+		// The numbers in the tabs. The visitors count the approved posts, the owner and the admins all posts.
+		// The saved posts are counted only if the user shows them (the owner always).
+		const session = await getServerSession(authOptions);
+		const isOwner = session?.user?.id === userId;
+		const canSeeAll = isOwner || isAdminEmail(session?.user?.email);
+
+		const postsCount = await Post.countDocuments(
+			canSeeAll ? { creator: userId } : { creator: userId, status: PostStatus.APPROVED }
+		);
+
+		let savedCount: number | undefined;
+
+		if (isOwner || profile.savedPublic) {
+			const saves = (await Save.find({ user: userId })
+				.select("post")
+				.lean()) as unknown as { post: unknown }[];
+
+			savedCount = await Post.countDocuments({
+				_id: { $in: saves.map((save) => save.post) },
+				status: PostStatus.APPROVED,
+			});
+		}
+
+		return NextResponse.json({ ...profile, postsCount, savedCount }, { status: 200 });
 	} catch (error) {
 		return failed();
 	}
