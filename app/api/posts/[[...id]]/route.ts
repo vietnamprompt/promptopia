@@ -148,7 +148,18 @@ export async function POST(request: NextRequest) {
 			{ status: 201 }
 		);
 	} catch (error) {
-		return NextResponse.json(error, { status: 500 });
+		// The reason is written in the logs of Vercel, so it can be found.
+		console.error("Create post failed:", error);
+
+		// A wrong value (i.e. a missing title) is a problem of the request, not of the server.
+		if (error instanceof mongoose.Error.ValidationError) {
+			return NextResponse.json(error, { status: 400 });
+		}
+
+		return NextResponse.json(
+			{ error: "Failed to create post!", message: error instanceof Error ? error.message : "" },
+			{ status: 500 }
+		);
 	}
 }
 
@@ -216,11 +227,16 @@ async function updatePost(request: NextRequest, { params }: Context) {
 			{ status: 200 }
 		);
 	} catch (error) {
+		console.error("Update post failed:", error);
+
 		if (error instanceof mongoose.Error.ValidationError) {
 			return NextResponse.json(error, { status: 400 });
 		}
 
-		return NextResponse.json({ error: "Failed to update post!" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Failed to update post!", message: error instanceof Error ? error.message : "" },
+			{ status: 500 }
+		);
 	}
 }
 
