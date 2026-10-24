@@ -11,6 +11,7 @@ export enum SharePlatform {
 	CHATGPT = "chatgpt",
 	CLAUDE = "claude",
 	GEMINI = "gemini",
+	GOOGLE_AI = "google_ai",
 	GROK = "grok",
 	PERPLEXITY = "perplexity",
 }
@@ -35,6 +36,12 @@ export const SHARE_PLATFORMS: Record<SharePlatform, SharePlatformConfig> = {
 	[SharePlatform.GEMINI]: {
 		name: "Gemini",
 		openUrl: "https://gemini.google.com/app", // Gemini does not support prefill by URL
+	},
+	// Google AI Mode (powered by Gemini) takes the prompt from the URL, the Gemini app does not.
+	[SharePlatform.GOOGLE_AI]: {
+		name: "Google AI",
+		openUrl: "https://www.google.com/search?udm=50",
+		prefillUrl: (q) => `https://www.google.com/search?udm=50&q=${q}`,
 	},
 	[SharePlatform.GROK]: {
 		name: "Grok",

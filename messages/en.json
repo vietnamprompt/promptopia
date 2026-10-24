@@ -101,6 +101,7 @@
 		"linkAreaLabel": "Link to the AI platform or source of the prompt",
 		"openIn": "Open in:",
 		"shareCopied": "The prompt is copied. If the chat box is empty, paste it with Ctrl+V.",
+		"shareCopiedPaste": "The prompt is copied. {platform} can not take it from a link, so paste it into the chat box with Ctrl+V.",
 		"status": {
 			"pending": "Pending review - not visible on the homepage yet",
 			"approved": "Published",
