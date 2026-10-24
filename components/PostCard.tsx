@@ -271,14 +271,14 @@ const PostCard: React.FC<PostCardProps> = ({
 			</div>
 
 			{morePrompts.length > 0 && (
-				<div className="mt-3 flex flex-wrap items-center gap-3">
-					<span className="rounded-full bg-white px-3 py-1 text-sm font-medium text-mlt-dark-4 shadow-sm">
+				<div className="mb-4 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+					<span className="text-sm font-medium text-mlt-dark-6">
 						{t("promptsCount", { count: promptsTotal })}
 					</span>
 
 					<button
 						aria-expanded={showAllPrompts}
-						className="text-sm font-medium text-mlt-orange-secondary hover:underline"
+						className="rounded-full border border-mlt-orange-secondary bg-white px-3 py-1 text-sm font-medium text-mlt-orange-secondary transition hover:bg-mlt-orange-secondary hover:text-white"
 						type="button"
 						onClick={() => setShowAllPrompts(!showAllPrompts)}
 					>
@@ -287,7 +287,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
 					{showAllPrompts && (
 						<button
-							className="text-sm font-medium text-mlt-dark-4 hover:underline"
+							className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-mlt-dark-4 transition hover:border-mlt-orange-secondary hover:text-mlt-orange-secondary"
 							type="button"
 							onClick={copyAllPrompts}
 						>
