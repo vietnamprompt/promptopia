@@ -13,6 +13,7 @@ import { addSavedCounts } from "@/lib/engagement";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { parsePostParam, postPath, postSlug } from "@/lib/post-url";
 import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
+import { getRelatedPosts } from "@/lib/related-posts";
 import { getSiteSettings } from "@/lib/site-settings";
 import Post from "@/models/post";
 
@@ -108,16 +109,8 @@ export default async function PromptPage({ params }: PageProps) {
 		redirect(`/${params.locale}${postPath(post)}`);
 	}
 
-	// The prompts with the same tags, the visitor can continue to read.
-	const related = (await Post.find({
-		_id: { $ne: post._id },
-		status: PostStatus.APPROVED,
-		tags: { $in: post.tags },
-	})
-		.sort({ _id: -1 })
-		.limit(4)
-		.select("title")
-		.lean()) as unknown as { _id: unknown; title: string }[];
+	// The prompts to read next (see 'lib/related-posts.ts' for the criteria).
+	const related = await getRelatedPosts(post, 6);
 
 	const jsonLd = {
 		"@context": "https://schema.org",
@@ -139,7 +132,7 @@ export default async function PromptPage({ params }: PageProps) {
 			/>
 			<PromptDetail
 				post={post as never}
-				related={related.map((item) => ({ _id: String(item._id), title: item.title }))}
+				related={related}
 			/>
 		</>
 	);

@@ -335,6 +335,12 @@
   },
   "PromptPage": {
     "back": "Back to the homepage",
-    "related": "Related prompts"
+    "related": "Related prompts",
+    "share": "Share this prompt",
+    "shareOther": "Share…",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "relatedHint": "Prompts with the same tags come first, then the most copied.",
+    "copies": "{count} copies"
   }
 }
