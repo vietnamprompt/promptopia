@@ -89,10 +89,10 @@
       "user": "Người dùng"
     },
     "tabs": {
-      "newest": "Mới nhất",
+      "newest": "Mới",
       "trending": "Thịnh hành",
-      "top": "Nhiều nhất",
-      "saved": "Lưu nhiều nhất",
+      "top": "Top",
+      "saved": "Lưu nhiều",
       "following": "Đang theo dõi"
     },
     "loadMore": "Xem thêm",
