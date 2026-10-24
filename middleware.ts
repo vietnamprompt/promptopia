@@ -56,6 +56,9 @@ const PROFILE_PATH = /^\/@[^/]+\/?$/;
 // The same profile with the language in the address: "/vi/@username" -> "/@username".
 const PROFILE_PATH_WITH_LOCALE = new RegExp(`^/(${locales.join("|")})/(@[^/]+)/?$`);
 
+// The page of one prompt: "/p/{slug}-{token}" with or without the language.
+const PROMPT_PATH = /^(\/(en|vi))?\/p\/[^/]+\/?$/;
+
 export default function middleware(req: NextRequest) {
 	const { pathname } = req.nextUrl;
 
@@ -109,7 +112,8 @@ export default function middleware(req: NextRequest) {
 		`^(/(${locales.join("|")}))?(${publicPages.join("|")})?/?$`,
 		"i"
 	);
-	const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
+	// The page of a prompt ("/p/...") is public, Google reads it.
+	const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname) || PROMPT_PATH.test(pathname);
 
 	if (isPublicPage) {
 		return intlMiddleware(req);

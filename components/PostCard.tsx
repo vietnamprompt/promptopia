@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import Link from "next/link";
 
@@ -9,6 +9,7 @@ import { PostStatus, PostTypeFromDb } from "@/interfaces/Post";
 import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
 import { Path } from "@/interfaces/Path";
 import { profileHref } from "@/lib/profile-url";
+import { postPath } from "@/lib/post-url";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 
 import Btn_PostTag from "./fragments/Btn_PostTag";
@@ -25,6 +26,8 @@ interface PostCardProps {
 	handleTagClick?: (tag: string) => void;
 	handleEdit?: (post: PostTypeFromDb) => void;
 	handleDelete?: (post: PostTypeFromDb) => void;
+	// The page of one prompt: all prompts are open, the text is not cut and the title is the main heading.
+	detail?: boolean;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -34,8 +37,10 @@ const PostCard: React.FC<PostCardProps> = ({
 	handleTagClick,
 	handleEdit,
 	handleDelete,
+	detail = false,
 }) => {
 	const t = useTranslations("PostCard");
+	const locale = useLocale();
 	const pathName = usePathname();
 	const { session } = usePromptopiaContext();
 	const lastSegment = pathName.split("/").at(-1);
@@ -110,7 +115,7 @@ const PostCard: React.FC<PostCardProps> = ({
 	// prompt, the button "Show all prompts" opens the others.
 	const morePrompts = (post.morePrompts ?? []).filter((item) => item?.prompt);
 	const promptsTotal = 1 + morePrompts.length;
-	const [showAllPrompts, setShowAllPrompts] = useState(false);
+	const [showAllPrompts, setShowAllPrompts] = useState(detail);
 	const purple = isEditMode || isDelMode;
 
 	// All prompts in one text, separated by a line, for the visitors who paste them at once.
@@ -177,11 +182,18 @@ const PostCard: React.FC<PostCardProps> = ({
 
 			{(post.title || post.description) && (
 				<div className="mt-5">
-					{post.title && (
-						<h3 className="font-satoshi break-words text-lg font-semibold leading-snug text-mlt-dark-2">
-							{post.title}
-						</h3>
-					)}
+					{post.title &&
+						(detail ? (
+							<h1 className="font-satoshi break-words text-2xl font-bold leading-snug text-mlt-dark-2">
+								{post.title}
+							</h1>
+						) : (
+							<h3 className="font-satoshi break-words text-lg font-semibold leading-snug text-mlt-dark-2">
+								<Link className="hover:text-mlt-orange-secondary" href={`/${locale}${postPath(post)}`}>
+									{post.title}
+								</Link>
+							</h3>
+						))}
 					{post.description && (
 						<p className="mt-1 whitespace-pre-line break-words text-sm text-mlt-dark-6">
 							{post.description}
@@ -233,7 +245,7 @@ const PostCard: React.FC<PostCardProps> = ({
 				/>
 
 				<p
-					className="post_card_prompt_text max-h-[146px] whitespace-pre-wrap break-words"
+					className={`post_card_prompt_text whitespace-pre-wrap break-words ${detail ? "" : "max-h-[146px]"}`}
 					onClick={handlePromptCopy}
 				>
 					{post.prompt}
@@ -276,6 +288,7 @@ const PostCard: React.FC<PostCardProps> = ({
 						{t("promptsCount", { count: promptsTotal })}
 					</span>
 
+					{!detail && (
 					<button
 						aria-expanded={showAllPrompts}
 						className="rounded-full border border-mlt-orange-secondary bg-white px-3 py-1 text-sm font-medium text-mlt-orange-secondary transition hover:bg-mlt-orange-secondary hover:text-white"
@@ -284,6 +297,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					>
 						{showAllPrompts ? t("showLess") : t("showAllPrompts")}
 					</button>
+					)}
 
 					{showAllPrompts && (
 						<button
@@ -329,7 +343,7 @@ const PostCard: React.FC<PostCardProps> = ({
 							/>
 
 							<p
-								className="post_card_prompt_text max-h-[146px] whitespace-pre-wrap break-words"
+								className={`post_card_prompt_text whitespace-pre-wrap break-words ${detail ? "" : "max-h-[146px]"}`}
 								onClick={() => copyText(item.prompt)}
 							>
 								{item.prompt}

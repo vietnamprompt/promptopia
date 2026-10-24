@@ -6,6 +6,7 @@ import type { MetadataRoute } from "next";
 
 import { PostStatus } from "@/interfaces/Post";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
+import { postPath } from "@/lib/post-url";
 import Post from "@/models/post";
 import User from "@/models/user";
 
@@ -45,6 +46,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				lastModified: lastById.get(String(user._id)) ?? now,
 				changeFrequency: "weekly",
 				priority: 0.6,
+			});
+		});
+
+		// Every approved prompt has its own page. The Vietnamese address is listed, it is the main one.
+		const posts = (await Post.find({ status: PostStatus.APPROVED })
+			.sort({ _id: -1 })
+			.limit(10000)
+			.select("title updatedAt")
+			.lean()) as unknown as { _id: unknown; title?: string; updatedAt?: Date }[];
+
+		posts.forEach((post) => {
+			pages.push({
+				url: `${base}/vi${postPath(post)}`,
+				lastModified: post.updatedAt ?? now,
+				changeFrequency: "weekly",
+				priority: 0.8,
 			});
 		});
 	} catch (error) {

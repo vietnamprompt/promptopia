@@ -332,5 +332,9 @@
     "description": "Manage the prompts you have posted: edit, delete and see their status.",
     "empty": "You have not posted any prompt yet.",
     "create": "Add prompt"
+  },
+  "PromptPage": {
+    "back": "Back to the homepage",
+    "related": "Related prompts"
   }
 }

@@ -332,5 +332,9 @@
     "description": "Quản lý các prompt bạn đã đăng: sửa, xóa và xem trạng thái.",
     "empty": "Bạn chưa đăng prompt nào.",
     "create": "Thêm prompt"
+  },
+  "PromptPage": {
+    "back": "Về trang chủ",
+    "related": "Prompt liên quan"
   }
 }
