@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { UserProfileType } from "@/interfaces/Profile";
 
 import Header from "./Header";
+import ProfileSettings from "./ProfileSettings";
 import PostCardList from "./PostCardList";
 
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
@@ -22,7 +23,9 @@ const UserProfile: React.FC<UserProfileType> = ({ user, posts }) => {
 				titleGradient={user?.name ?? ""}
 			/>
 
-			<p className="max-w-md text-sm text-mlt-dark-6">{t("moderationNote")}</p>
+			<ProfileSettings />
+
+			<p className="mt-8 max-w-md text-sm text-mlt-dark-6">{t("moderationNote")}</p>
 
 			<PostCardList data={posts} />
 		</section>

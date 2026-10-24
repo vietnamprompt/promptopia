@@ -12,6 +12,7 @@ import { authOptions } from "@/lib/auth-options";
 import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import Post from "@/models/post";
 
 export const dynamic = "force-dynamic";
@@ -56,9 +57,9 @@ export async function GET(request: NextRequest) {
 		// The oldest pending posts are first, the other lists start with the newest posts.
 		const posts = await Post.find(filter)
 			.sort({ _id: status === PostStatus.PENDING ? 1 : -1 })
-			.populate(["creator", "image"]);
+			.populate(POST_POPULATE);
 
-		return NextResponse.json({ posts }, { status: 200 });
+		return NextResponse.json({ posts: posts.map(toPublicPost) }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to retrieve posts!" }, { status: 500 });
 	}
@@ -94,7 +95,7 @@ export async function PATCH(request: NextRequest) {
 			filter,
 			{ status, moderatedAt: new Date() },
 			{ new: true }
-		).populate(["creator", "image"]);
+		).populate(POST_POPULATE);
 
 		if (!post) {
 			const exists = await Post.exists({ _id: id });
@@ -105,7 +106,10 @@ export async function PATCH(request: NextRequest) {
 			);
 		}
 
-		return NextResponse.json({ message: "Post moderated successfully!", post }, { status: 200 });
+		return NextResponse.json(
+			{ message: "Post moderated successfully!", post: toPublicPost(post) },
+			{ status: 200 }
+		);
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to moderate the post!" }, { status: 500 });
 	}

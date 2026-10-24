@@ -18,6 +18,7 @@ import { authOptions } from "@/lib/auth-options";
 import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import { normalizeSharePlatforms } from "@/interfaces/SharePlatform";
 import Post from "@/models/post";
 
@@ -48,19 +49,16 @@ export async function GET(request: NextRequest, { params }: Context) {
 
 		// The list of posts: only the approved posts are public.
 		if (!postId) {
-			const posts = await Post.find({ status: PostStatus.APPROVED }).populate([
-				"creator",
-				"image",
-			]);
+			const posts = await Post.find({ status: PostStatus.APPROVED }).populate(POST_POPULATE);
 
-			return NextResponse.json({ posts }, { status: 200 });
+			return NextResponse.json({ posts: posts.map(toPublicPost) }, { status: 200 });
 		}
 
 		if (!mongoose.isValidObjectId(postId)) {
 			return NextResponse.json({ posts: [] }, { status: 200 });
 		}
 
-		const post = await Post.findOne({ _id: postId }).populate(["creator", "image"]);
+		const post = await Post.findOne({ _id: postId }).populate(POST_POPULATE);
 
 		if (!post) {
 			return NextResponse.json({ posts: [] }, { status: 200 });
@@ -76,7 +74,7 @@ export async function GET(request: NextRequest, { params }: Context) {
 			}
 		}
 
-		return NextResponse.json({ posts: [post] }, { status: 200 });
+		return NextResponse.json({ posts: [toPublicPost(post)] }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to retrieve posts!" }, { status: 500 });
 	}
@@ -110,10 +108,10 @@ export async function POST(request: NextRequest) {
 		});
 
 		await newPost.save();
-		await newPost.populate(["creator", "image"]);
+		await newPost.populate(POST_POPULATE);
 
 		return NextResponse.json(
-			{ message: "Prompt created successfully!", post: newPost },
+			{ message: "Prompt created successfully!", post: toPublicPost(newPost) },
 			{ status: 201 }
 		);
 	} catch (error) {
@@ -165,10 +163,10 @@ async function updatePost(request: NextRequest, { params }: Context) {
 		});
 
 		await post.save();
-		await post.populate(["creator", "image"]);
+		await post.populate(POST_POPULATE);
 
 		return NextResponse.json(
-			{ message: "Post updated successfully!", post },
+			{ message: "Post updated successfully!", post: toPublicPost(post) },
 			{ status: 200 }
 		);
 	} catch (error) {

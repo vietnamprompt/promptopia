@@ -16,6 +16,16 @@ const UserSchema = new Schema({
 			"Username is invalid, it should contain 4-84 alphanumeric letters and be unique!",
 		],
 	},
+	// The user can choose the username only once, until then it is generated automatically.
+	usernameChosen: {
+		type: Boolean,
+		default: false,
+	},
+	// The e-mail is visible on the public profile only if the user chooses it.
+	showEmail: {
+		type: Boolean,
+		default: false,
+	},
 	name: {
 		type: String,
 	},
@@ -30,6 +40,9 @@ const UserSchema = new Schema({
 		type: String,
 	},
 });
+
+// Two users can not have the same username.
+UserSchema.index({ username: 1 }, { unique: true });
 
 /**
  * For a regular  always on always 

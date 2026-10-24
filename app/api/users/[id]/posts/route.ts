@@ -9,6 +9,7 @@ import { authOptions } from "@/lib/auth-options";
 import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import Post from "@/models/post";
 
 export const dynamic = "force-dynamic";
@@ -38,9 +39,9 @@ export async function GET(request: NextRequest, { params }: Context) {
 			? { creator: userId }
 			: { creator: userId, status: PostStatus.APPROVED };
 
-		const posts = await Post.find(filter).populate(["creator", "image"]);
+		const posts = await Post.find(filter).populate(POST_POPULATE);
 
-		return NextResponse.json({ posts }, { status: 200 });
+		return NextResponse.json({ posts: posts.map(toPublicPost) }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to retrieve posts!" }, { status: 500 });
 	}

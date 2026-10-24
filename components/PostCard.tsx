@@ -78,15 +78,10 @@ const PostCard: React.FC<PostCardProps> = ({
 								width={45}
 							/>
 						</div>
-						<div className="flex flex-col max-w-[100%] overflow-hidden gap-1">
-							<h2 className="font-satoshi font-semibold text-mlt-dark-2 pr-7">
-								{post?.creator?.name ?? t("defaultUsername")}
+						<div className="flex flex-col max-w-[100%] overflow-hidden justify-center">
+							<h2 className="font-satoshi font-semibold text-mlt-dark-2 pr-7 text-ellipsis overflow-hidden whitespace-nowrap">
+								@{post?.creator?.username ?? t("defaultUsername")}
 							</h2>
-
-							<p className="font-inter text-mlt-dark-6 text-ellipsis overflow-hidden whitespace-pre">
-								{post?.creator?.email?.replace(/\./g, "-").replace(/@.*$/, t("spamProtect")) ??
-									t("defaultEmail")}
-							</p>
 						</div>
 					</div>
 				</Link>

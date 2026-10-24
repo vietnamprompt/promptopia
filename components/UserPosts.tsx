@@ -1,5 +1,8 @@
 import React from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
+
+import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
 
 import { UserProfileType } from "@/interfaces/Profile";
 
@@ -21,6 +24,24 @@ const UserPosts: React.FC<UserProfileType> = ({ user, posts }) => {
 				textStyle="text-left"
 				titleGradient={user?.name ?? t("placeholderUser")}
 			/>
+
+			{user?._id && (
+				<div className="mt-6 flex items-center gap-4">
+					<Image
+						unoptimized
+						alt={t("altAvatar")}
+						className="h-16 w-16 rounded-full bg-white object-cover"
+						height={64}
+						src={user?.image || logo}
+						width={64}
+					/>
+
+					<div className="flex flex-col gap-1">
+						<p className="font-semibold text-mlt-dark-2">@{user?.username}</p>
+						{user?.email && <p className="text-sm text-mlt-dark-6">{user.email}</p>}
+					</div>
+				</div>
+			)}
 
 			<PostCardList data={posts} />
 		</section>

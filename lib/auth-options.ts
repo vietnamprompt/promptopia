@@ -29,6 +29,20 @@ import type { NextAuthOptions } from "next-auth";
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 
+// The username is generated automatically and it does not reveal the e-mail of the user.
+// The user can choose a real one later, on the profile page (only once).
+async function generateUniqueUsername() {
+	for (let attempt = 0; attempt < 5; attempt++) {
+		const username = `user${Math.random().toString(36).slice(2, 10)}`;
+
+		if (!(await User.exists({ username }))) {
+			return username;
+		}
+	}
+
+	return `user${Date.now().toString(36)}`;
+}
+
 export const authOptions: NextAuthOptions = {
 	session: {
 		strategy: "jwt",
@@ -49,6 +63,9 @@ export const authOptions: NextAuthOptions = {
 			session.user.id = sessionUser?._id.toString(); // see: @/types/next-auth
 			session.user.accountProvider = sessionUser?.accountProvider;
 			session.user.username = sessionUser?.username;
+			// The name and the avatar can be changed by the user on the profile page.
+			session.user.name = sessionUser?.name ?? session.user.name;
+			session.user.image = sessionUser?.image ?? session.user.image;
 			session.user.description = sessionUser?.description;
 			session.user.isAdmin = isAdminEmail(session?.user?.email); // used only to show the Admin link
 
@@ -80,13 +97,7 @@ export const authOptions: NextAuthOptions = {
 
 					await User.create({
 						email: String(profile?.email),
-						username: String(
-							`${profile?.email}${Math.floor(Math.random() * 10000)}${account?.provider}`
-								?.replace(/(\s|\.|-|@)/g, ".")
-								.replace(/\.+/g, "")
-								.toLocaleLowerCase()
-								.replace(/[^a-z0-9]/gi, "")
-						),
+						username: await generateUniqueUsername(),
 						name,
 						image: String(profile?.picture ?? profile?.image ?? profile?.avatar_url),
 						accountProvider: String(account?.provider),

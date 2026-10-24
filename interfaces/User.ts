@@ -1,9 +1,11 @@
 export interface UserType {
-	email: string;
+	email?: string; // public only if the user has chosen to show it
 	username: string;
+	usernameChosen?: boolean;
+	showEmail?: boolean;
 	name: string;
 	image: string;
-	accountProvider: string;
+	accountProvider?: string; // private, not sent to the visitors
 	description?: string;
 }
 

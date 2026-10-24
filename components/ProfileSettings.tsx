@@ -1,0 +1,334 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+
+import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
+import { NAME_MAX, USERNAME_MAX, USERNAME_MIN, validateUsername } from "@/lib/profile-rules";
+
+interface OwnProfile {
+	_id: string;
+	email: string;
+	name?: string;
+	username: string;
+	usernameChosen: boolean;
+	image?: string;
+	showEmail: boolean;
+}
+
+interface Message {
+	kind: "ok" | "error";
+	key: string; // "Profile.saved" or "Profile.errors.<key>"
+}
+
+function loadImage(file: File): Promise<HTMLImageElement> {
+	return new Promise((resolve, reject) => {
+		const url = URL.createObjectURL(file);
+		const img = new window.Image();
+
+		img.onload = () => {
+			URL.revokeObjectURL(url);
+			resolve(img);
+		};
+		img.onerror = () => {
+			URL.revokeObjectURL(url);
+			reject(new Error("The file is not an image."));
+		};
+		img.src = url;
+	});
+}
+
+// The avatar is cropped to a square and resized, so the upload is always small and fast.
+async function resizeToSquareJpeg(file: File, size = 256): Promise<Blob> {
+	const img = await loadImage(file);
+	const side = Math.min(img.width, img.height);
+	const canvas = document.createElement("canvas");
+
+	canvas.width = size;
+	canvas.height = size;
+
+	const context = canvas.getContext("2d");
+
+	if (!context) {
+		throw new Error("Canvas is not supported.");
+	}
+
+	context.drawImage(
+		img,
+		(img.width - side) / 2,
+		(img.height - side) / 2,
+		side,
+		side,
+		0,
+		0,
+		size,
+		size
+	);
+
+	return new Promise((resolve, reject) => {
+		canvas.toBlob(
+			(blob) => (blob ? resolve(blob) : reject(new Error("Can not create the image."))),
+			"image/jpeg",
+			0.85
+		);
+	});
+}
+
+const ProfileSettings: React.FC = () => {
+	const t = useTranslations("Profile");
+	const fileInput = useRef<HTMLInputElement>(null);
+	const [profile, setProfile] = useState<OwnProfile | null>(null);
+	const [name, setName] = useState("");
+	const [showEmail, setShowEmail] = useState(false);
+	const [username, setUsername] = useState("");
+	const [busy, setBusy] = useState(false);
+	const [message, setMessage] = useState<Message | null>(null);
+
+	const load = useCallback(async () => {
+		try {
+			const response = await fetch("/api/users/me");
+
+			if (!response.ok) {
+				return;
+			}
+
+			const { user } = await response.json();
+
+			setProfile(user);
+			setName(user.name ?? "");
+			setShowEmail(!!user.showEmail);
+		} catch (error) {
+			console.error(error);
+		}
+	}, []);
+
+	useEffect(() => {
+		load();
+	}, [load]);
+
+	// Reload the page after a change, so the new name, avatar and username are used everywhere.
+	const finish = () => {
+		setMessage({ kind: "ok", key: "saved" });
+		setTimeout(() => window.location.reload(), 800);
+	};
+
+	const showError = async (response: Response) => {
+		const data = await response.json().catch(() => ({}));
+
+		setMessage({ kind: "error", key: data?.errorKey ?? "generic" });
+	};
+
+	const send = async (body: Record<string, unknown>) => {
+		setBusy(true);
+		setMessage(null);
+
+		try {
+			const response = await fetch("/api/users/me", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(body),
+			});
+
+			if (response.ok) {
+				finish();
+			} else {
+				await showError(response);
+			}
+		} catch (error) {
+			console.error(error);
+			setMessage({ kind: "error", key: "generic" });
+		} finally {
+			setBusy(false);
+		}
+	};
+
+	const handleSaveProfile = () => {
+		const cleanName = name.replace(/\s+/g, " ").trim();
+
+		if (!cleanName) {
+			setMessage({ kind: "error", key: "nameRequired" });
+
+			return;
+		}
+
+		send({ name: cleanName, showEmail });
+	};
+
+	const handleSaveUsername = () => {
+		const value = username.trim().toLowerCase();
+		const invalid = validateUsername(value);
+
+		if (invalid) {
+			setMessage({ kind: "error", key: invalid });
+
+			return;
+		}
+
+		if (!window.confirm(t("usernameConfirm", { username: value }))) {
+			return;
+		}
+
+		send({ username: value });
+	};
+
+	const handleAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+
+		event.target.value = "";
+
+		if (!file) {
+			return;
+		}
+
+		setBusy(true);
+		setMessage(null);
+
+		try {
+			const formData = new FormData();
+
+			formData.append("file", await resizeToSquareJpeg(file), "avatar.jpg");
+
+			const response = await fetch("/api/users/me/avatar", {
+				method: "POST",
+				body: formData,
+			});
+
+			if (response.ok) {
+				finish();
+			} else {
+				await showError(response);
+			}
+		} catch (error) {
+			console.error(error);
+			setMessage({ kind: "error", key: "avatarType" });
+		} finally {
+			setBusy(false);
+		}
+	};
+
+	if (!profile) {
+		return null;
+	}
+
+	return (
+		<div className="glassmorphism mt-8 flex w-full max-w-2xl flex-col gap-6">
+			<h2 className="form_input_title">{t("settingsTitle")}</h2>
+
+			<div className="flex items-center gap-4">
+				<Image
+					unoptimized
+					alt={t("altAvatar")}
+					className="h-24 w-24 rounded-full bg-white object-cover"
+					height={96}
+					src={profile.image || logo}
+					width={96}
+				/>
+
+				<div className="flex flex-col items-start gap-2">
+					<input
+						ref={fileInput}
+						accept="image/*"
+						className="hidden"
+						type="file"
+						onChange={handleAvatar}
+					/>
+					<button
+						className="_btn gray_light"
+						disabled={busy}
+						type="button"
+						onClick={() => fileInput.current?.click()}
+					>
+						{t("changeAvatar")}
+					</button>
+					<p className="text-xs text-mlt-dark-6">{t("avatarHint")}</p>
+				</div>
+			</div>
+
+			<label htmlFor="profile-name">
+				<span className="form_input_title">{t("name")}</span>
+
+				<input
+					className="form_input"
+					id="profile-name"
+					maxLength={NAME_MAX}
+					placeholder={t("namePlaceholder")}
+					value={name}
+					onChange={(e) => setName(e.target.value)}
+				/>
+			</label>
+
+			<div>
+				<p className="form_input_title">{t("email")}</p>
+				<p className="mt-1 text-sm text-mlt-dark-4">{profile.email}</p>
+
+				<label className="mt-2 flex cursor-pointer items-center gap-2 text-sm text-mlt-dark-4">
+					<input
+						checked={showEmail}
+						className="h-4 w-4"
+						type="checkbox"
+						onChange={(e) => setShowEmail(e.target.checked)}
+					/>
+					{t("showEmail")}
+				</label>
+				<p className="mt-1 text-xs text-mlt-dark-6">{t("emailHiddenNote")}</p>
+			</div>
+
+			<div>
+				<button
+					className="_btn orange_invert"
+					disabled={busy}
+					type="button"
+					onClick={handleSaveProfile}
+				>
+					{busy ? t("saving") : t("save")}
+				</button>
+			</div>
+
+			<div>
+				<label htmlFor="profile-username">
+					<span className="form_input_title">{t("username")}</span>
+				</label>
+
+				{profile.usernameChosen ? (
+					<>
+						<p className="mt-1 text-sm text-mlt-dark-4">@{profile.username}</p>
+						<p className="mt-1 text-xs text-mlt-dark-6">{t("usernameFixed")}</p>
+					</>
+				) : (
+					<>
+						<input
+							className="form_input"
+							id="profile-username"
+							maxLength={USERNAME_MAX}
+							placeholder={t("usernamePlaceholder")}
+							value={username}
+							onChange={(e) => setUsername(e.target.value.toLowerCase())}
+						/>
+						<p className="mt-1 text-xs text-mlt-dark-6">
+							{t("usernameHint", { min: USERNAME_MIN, max: USERNAME_MAX })}
+						</p>
+						<button
+							className="_btn gray_heavy_invert mt-3"
+							disabled={busy || !username}
+							type="button"
+							onClick={handleSaveUsername}
+						>
+							{t("saveUsername")}
+						</button>
+					</>
+				)}
+			</div>
+
+			{message && (
+				<p
+					className={`text-sm ${
+						message.kind === "ok" ? "text-green-600" : "text-red-600"
+					}`}
+				>
+					{message.kind === "ok" ? t("saved") : t(`errors.${message.key}`)}
+				</p>
+			)}
+		</div>
+	);
+};
+
+export default ProfileSettings;
