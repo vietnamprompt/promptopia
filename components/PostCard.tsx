@@ -216,8 +216,8 @@ const PostCard: React.FC<PostCardProps> = ({
 			)}
 
 			<div
-				className={`post_card_prompt !pl-5 !pt-5 ${
-					post?.image ? "-mt-6 post_card_prompt_wit_image" : "mt-6"
+				className={`post_card_prompt !rounded-xl border border-mlt-gray-5/70 !bg-white/35 hover:!bg-white/55 !pl-5 !pt-5 ${
+					post?.image ? "-mt-6 post_card_prompt_wit_image after:!rounded-xl after:!rounded-b-none" : "mt-6"
 				}`}
 			>
 				{/* The copy button sits on the rounded corner of the prompt, its effect is easy to see. */}
@@ -235,7 +235,8 @@ const PostCard: React.FC<PostCardProps> = ({
 						width: "36px",
 						height: "36px",
 						background: "#ffffff",
-						boxShadow: "0 1px 5px rgba(0, 0, 0, 0.22)",
+						border: "1px solid rgba(0, 0, 0, 0.12)",
+						boxShadow: "none",
 						zIndex: 3,
 					}}
 					text={t("altCopyPrompt")}
@@ -318,7 +319,7 @@ const PostCard: React.FC<PostCardProps> = ({
 							{index + 2}. {item.title}
 						</h4>
 
-						<div className="post_card_prompt relative mt-3 !pl-5 !pt-5">
+						<div className="post_card_prompt !rounded-xl border border-mlt-gray-5/70 !bg-white/35 hover:!bg-white/55 relative mt-3 !pl-5 !pt-5">
 							<IconEmbedSvgPop
 								bgColor={purple ? "bg-mlt-purple-secondary" : "bg-mlt-orange-secondary"}
 								c1={purple ? "mlt-purple-secondary" : "mlt-orange-secondary"}
@@ -333,7 +334,8 @@ const PostCard: React.FC<PostCardProps> = ({
 									width: "36px",
 									height: "36px",
 									background: "#ffffff",
-									boxShadow: "0 1px 5px rgba(0, 0, 0, 0.22)",
+									border: "1px solid rgba(0, 0, 0, 0.12)",
+						boxShadow: "none",
 									zIndex: 3,
 								}}
 								text={t("altCopyPrompt")}
