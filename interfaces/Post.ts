@@ -69,7 +69,13 @@ export const postInit: PostType = {
 	tags: "",
 	aiCategory: AiCategories.CHAT,
 	link: "",
-	sharePlatforms: [],
+	// A new post starts with these "Open in ..." buttons selected, the author can change them.
+	sharePlatforms: [
+		SharePlatform.CHATGPT,
+		SharePlatform.CLAUDE,
+		SharePlatform.GEMINI,
+		SharePlatform.GROK,
+	],
 	morePrompts: [],
 };
 
