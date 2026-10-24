@@ -83,7 +83,7 @@ const PromptDetail: React.FC<Props> = ({ post, related }) => {
 				/>
 			</div>
 
-			<div className="w-full rounded-xl border-2 border-mlt-gray-5/80 bg-white/30 p-5">
+			<div className="w-full rounded-xl border border-mlt-gray-5/80 bg-white/20 p-5">
 				<h2 className="form_input_title">{t("share")}</h2>
 
 				<div className="mt-3 flex flex-wrap gap-2">
@@ -121,7 +121,7 @@ const PromptDetail: React.FC<Props> = ({ post, related }) => {
 						{related.map((item) => (
 							<li key={item._id} className="flex">
 								<Link
-									className="group flex w-full flex-col rounded-xl border-2 border-mlt-gray-5/80 bg-white/40 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-mlt-orange-secondary hover:shadow-md"
+									className="group flex w-full flex-col rounded-xl border border-mlt-gray-5/80 bg-white/20 p-4 transition hover:border-mlt-orange-secondary"
 									href={`/${locale}${postPath(item)}`}
 								>
 									<h3 className="font-satoshi line-clamp-2 text-base font-semibold leading-snug text-mlt-dark-2 group-hover:text-mlt-orange-secondary">
