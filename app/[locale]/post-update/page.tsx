@@ -128,7 +128,7 @@ const UpdatePost_Page: React.FC = () => {
 				// The edited post is "pending" again, so it must disappear from the homepage
 				// until an admin approves it.
 				setPosts(posts.filter((post) => post._id !== postId));
-				router.push(Path.PROFILE);
+				router.push(Path.MY_POSTS);
 			} else {
 				// The error handling here should be a bit complex in order to apply the translations.
 				// At all it is better to make a complete check on the FE, before fetch the API.

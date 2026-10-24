@@ -40,7 +40,7 @@
     "admin": "Quản trị",
     "languageEn": "English",
     "languageVi": "Tiếng Việt",
-    "myPosts": "Prompt đã đăng"
+    "myPosts": "Prompt của tôi"
   },
   "Home": {
     "headingLn1": "Khám phá & Chia sẻ",
@@ -328,7 +328,7 @@
     "saved": "Đã lưu"
   },
   "MyPosts": {
-    "title": "Prompt đã đăng",
+    "title": "Prompt của tôi",
     "description": "Quản lý các prompt bạn đã đăng: sửa, xóa và xem trạng thái.",
     "empty": "Bạn chưa đăng prompt nào.",
     "create": "Thêm prompt"
