@@ -84,6 +84,24 @@ async function resizeToSquareJpeg(file: File, size = 256): Promise<Blob> {
 	});
 }
 
+// Every field starts with the domain of the network, the user adds only the name after it.
+function withPrefixes(saved?: Record<string, string>) {
+	const result: Record<string, string> = {};
+
+	SOCIAL_PLATFORMS.forEach((platform) => {
+		result[platform] = saved?.[platform] || SOCIAL_CONFIG[platform].prefix;
+	});
+
+	return result;
+}
+
+// If the user pastes a whole link into a field that already has the domain, only the pasted link stays.
+function cleanTypedLink(platform: SocialPlatform, value: string) {
+	const lastStart = value.toLowerCase().lastIndexOf("https://");
+
+	return platform !== "email" && lastStart > 0 ? value.slice(lastStart) : value;
+}
+
 const ProfileSettings: React.FC = () => {
 	const t = useTranslations("Profile");
 	const { session } = usePromptopiaContext();
@@ -91,7 +109,6 @@ const ProfileSettings: React.FC = () => {
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [profile, setProfile] = useState<OwnProfile | null>(null);
 	const [name, setName] = useState("");
-	const [showEmail, setShowEmail] = useState(false);
 	const [savedPublic, setSavedPublic] = useState(false);
 	const [links, setLinks] = useState<Record<string, string>>({});
 	const [username, setUsername] = useState("");
@@ -110,9 +127,8 @@ const ProfileSettings: React.FC = () => {
 
 			setProfile(user);
 			setName(user.name ?? "");
-			setShowEmail(!!user.showEmail);
 			setSavedPublic(!!user.savedPublic);
-			setLinks(user.socialLinks ?? {});
+			setLinks(withPrefixes(user.socialLinks));
 			setUsername(user.usernameChosen ? user.username : "");
 		} catch (error) {
 			console.error(error);
@@ -162,6 +178,8 @@ const ProfileSettings: React.FC = () => {
 		}
 	};
 
+	const currentUsername = profile?.usernameChosen ? profile.username : "";
+
 	const handleSaveProfile = () => {
 		const cleanName = name.replace(/\s+/g, " ").trim();
 
@@ -169,6 +187,20 @@ const ProfileSettings: React.FC = () => {
 			setMessage({ kind: "error", key: "nameRequired" });
 
 			return;
+		}
+
+		// The username is sent only if the user wrote a new one.
+		const newUsername = username.trim().toLowerCase();
+		const usernameChanged = !!newUsername && newUsername !== currentUsername;
+
+		if (usernameChanged) {
+			const invalid = validateUsername(newUsername, { allowReserved: isAdmin });
+
+			if (invalid) {
+				setMessage({ kind: "error", key: invalid });
+
+				return;
+			}
 		}
 
 		const cleanLinks: Record<string, string> = {};
@@ -186,20 +218,12 @@ const ProfileSettings: React.FC = () => {
 			cleanLinks[platform] = result.value;
 		}
 
-		send({ name: cleanName, showEmail, savedPublic, socialLinks: cleanLinks });
-	};
-
-	const handleSaveUsername = () => {
-		const value = username.trim().toLowerCase();
-		const invalid = validateUsername(value, { allowReserved: isAdmin });
-
-		if (invalid) {
-			setMessage({ kind: "error", key: invalid });
-
-			return;
-		}
-
-		send({ username: value });
+		send({
+			name: cleanName,
+			savedPublic,
+			socialLinks: cleanLinks,
+			...(usernameChanged ? { username: newUsername } : {}),
+		});
 	};
 
 	const handleAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -240,8 +264,6 @@ const ProfileSettings: React.FC = () => {
 	if (!profile) {
 		return null;
 	}
-
-	const currentUsername = profile.usernameChosen ? profile.username : "";
 
 	return (
 		<div className="glassmorphism mt-8 flex w-full max-w-2xl flex-col gap-6">
@@ -291,19 +313,25 @@ const ProfileSettings: React.FC = () => {
 			</label>
 
 			<div>
-				<p className="form_input_title">{t("email")}</p>
-				<p className="mt-1 text-sm text-mlt-dark-4">{profile.email}</p>
-
-				<label className="mt-2 flex cursor-pointer items-center gap-2 text-sm text-mlt-dark-4">
-					<input
-						checked={showEmail}
-						className="h-4 w-4"
-						type="checkbox"
-						onChange={(e) => setShowEmail(e.target.checked)}
-					/>
-					{t("showEmail")}
+				<label htmlFor="profile-username">
+					<span className="form_input_title">{t("username")}</span>
 				</label>
-				<p className="mt-1 text-xs text-mlt-dark-6">{t("emailHiddenNote")}</p>
+
+				{!profile.usernameChosen && (
+					<p className="mt-1 text-xs text-mlt-dark-6">{t("usernameNotChosen")}</p>
+				)}
+
+				<input
+					className="form_input"
+					id="profile-username"
+					maxLength={USERNAME_MAX}
+					placeholder={t("usernamePlaceholder")}
+					value={username}
+					onChange={(e) => setUsername(e.target.value.toLowerCase())}
+				/>
+				<p className="mt-1 text-xs text-mlt-dark-6">
+					{t("usernameHint", { min: USERNAME_MIN, max: USERNAME_MAX })}
+				</p>
 			</div>
 
 			<div>
@@ -334,12 +362,16 @@ const ProfileSettings: React.FC = () => {
 						>
 							{SOCIAL_CONFIG[platform].label}
 							<input
+								autoComplete="off"
 								className="form_input !mt-1"
 								id={`social-${platform}`}
+								inputMode={platform === "email" ? "email" : "url"}
 								maxLength={SOCIAL_LINK_MAX}
 								placeholder={SOCIAL_CONFIG[platform].example}
 								value={links[platform] ?? ""}
-								onChange={(e) => setLinks({ ...links, [platform]: e.target.value })}
+								onChange={(e) =>
+									setLinks({ ...links, [platform]: cleanTypedLink(platform, e.target.value) })
+								}
 							/>
 						</label>
 					))}
@@ -357,36 +389,6 @@ const ProfileSettings: React.FC = () => {
 				</button>
 			</div>
 
-			<div>
-				<label htmlFor="profile-username">
-					<span className="form_input_title">{t("username")}</span>
-				</label>
-
-				{!profile.usernameChosen && (
-					<p className="mt-1 text-xs text-mlt-dark-6">{t("usernameNotChosen")}</p>
-				)}
-
-				<input
-					className="form_input"
-					id="profile-username"
-					maxLength={USERNAME_MAX}
-					placeholder={t("usernamePlaceholder")}
-					value={username}
-					onChange={(e) => setUsername(e.target.value.toLowerCase())}
-				/>
-				<p className="mt-1 text-xs text-mlt-dark-6">
-					{t("usernameHint", { min: USERNAME_MIN, max: USERNAME_MAX })}
-				</p>
-				<button
-					className="_btn gray_heavy_invert mt-3"
-					disabled={busy || !username || username === currentUsername}
-					type="button"
-					onClick={handleSaveUsername}
-				>
-					{t("saveUsername")}
-				</button>
-			</div>
-
 			{message && (
 				<p
 					className={`text-sm ${
@@ -395,7 +397,7 @@ const ProfileSettings: React.FC = () => {
 				>
 					{message.kind === "ok"
 						? t("saved")
-						: t(`errors.${message.key}`, {
+						: t(`errors.${message.key === "socialLinkInvalid" && message.platform === "email" ? "emailInvalid" : message.key}`, {
 							  platform: message.platform ? SOCIAL_CONFIG[message.platform].label : "",
 							  example: message.platform ? SOCIAL_CONFIG[message.platform].example : "",
 						  })}

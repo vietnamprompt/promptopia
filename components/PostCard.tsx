@@ -53,6 +53,10 @@ const PostCard: React.FC<PostCardProps> = ({
 		[PostStatus.REJECTED]: "text-red-600",
 	};
 
+	// The follow, copy and save buttons are only for the published posts.
+	const showActions =
+		!isDelMode && post.status !== PostStatus.PENDING && post.status !== PostStatus.REJECTED;
+
 	const [copyCount, setCopyCount] = useState(post.copyCount ?? 0);
 	const copySent = useRef(false);
 
@@ -99,9 +103,9 @@ const PostCard: React.FC<PostCardProps> = ({
 
 	return (
 		<div className={`${isDelMode ? "post_card_del_mode" : "post_card"}`}>
-			<div className="relative">
-				<Link href={`${Path.POSTS}?user_id=${post.creator._id}`}>
-					<div className="post_card_header">
+			<div className="flex items-start justify-between gap-3">
+				<div className="flex min-w-0 items-start gap-3">
+					<Link href={`${Path.POSTS}?user_id=${post.creator._id}`}>
 						<div className="flex justify-center items-center w-14 h-14 cursor-pointer rounded-full z-10 bg-white min-w-[3.5rem] min-h-[3.5rem] relative">
 							<Image
 								unoptimized
@@ -112,27 +116,47 @@ const PostCard: React.FC<PostCardProps> = ({
 								width={45}
 							/>
 						</div>
-						<div className="flex flex-col max-w-[100%] overflow-hidden justify-center">
-							<h2 className="font-satoshi font-semibold text-mlt-dark-2 pr-7 text-ellipsis overflow-hidden whitespace-nowrap">
+					</Link>
+
+					<div className="flex min-w-0 flex-col items-start justify-center gap-1.5 self-stretch">
+						<Link
+							className="max-w-full"
+							href={`${Path.POSTS}?user_id=${post.creator._id}`}
+						>
+							<h2 className="font-satoshi font-semibold text-mlt-dark-2 text-ellipsis overflow-hidden whitespace-nowrap">
 								@{post?.creator?.username ?? t("defaultUsername")}
 							</h2>
-						</div>
-					</div>
-				</Link>
+						</Link>
 
-				<IconEmbedSvgPop
-					bgColor={isEditMode || isDelMode ? "bg-mlt-purple-secondary" : "bg-mlt-orange-secondary"}
-					c1={isEditMode || isDelMode ? "mlt-purple-secondary" : "mlt-orange-secondary"}
-					c2={isEditMode || isDelMode ? "mlt-purple-primary" : "mlt-orange-dark"}
-					height={22}
-					isActive={copied === post.prompt}
-					op1="84"
-					style={{ position: "absolute", right: "-6px", top: "-6px" }}
-					text={t("altCopyPrompt")}
-					type={copied === post.prompt ? "clipboard-check" : "clipboard"}
-					width={22}
-					onClick={handlePromptCopy}
-				/>
+						{showActions && <FollowButton userId={post.creator._id} />}
+					</div>
+				</div>
+
+				{showActions && (
+					<div className="flex shrink-0 items-center gap-3 pt-1">
+						<span
+							className="flex items-center gap-1 text-sm text-mlt-dark-6"
+							title={t("copyCount", { count: copyCount })}
+						>
+							<svg
+								fill="none"
+								height="16"
+								stroke="currentColor"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								viewBox="0 0 24 24"
+								width="16"
+							>
+								<rect height="13" rx="2" ry="2" width="13" x="9" y="9" />
+								<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+							</svg>
+							{copyCount}
+						</span>
+
+						<SaveButton count={post.savedCount} postId={post._id} />
+					</div>
+				)}
 			</div>
 
 			{(post.title || post.description) && (
@@ -204,42 +228,28 @@ const PostCard: React.FC<PostCardProps> = ({
 				)}
 			</div>
 
+			{/* The copy button is under the prompt, so the person sees its effect when it is clicked. */}
+			<div className="-mt-3 mb-2 flex justify-end">
+				<IconEmbedSvgPop
+					bgColor={isEditMode || isDelMode ? "bg-mlt-purple-secondary" : "bg-mlt-orange-secondary"}
+					c1={isEditMode || isDelMode ? "mlt-purple-secondary" : "mlt-orange-secondary"}
+					c2={isEditMode || isDelMode ? "mlt-purple-primary" : "mlt-orange-dark"}
+					height={22}
+					isActive={copied === post.prompt}
+					op1="84"
+					text={t("altCopyPrompt")}
+					type={copied === post.prompt ? "clipboard-check" : "clipboard"}
+					width={22}
+					onClick={handlePromptCopy}
+				/>
+			</div>
+
 			<SharePlatformButtons platforms={post.sharePlatforms} prompt={post.prompt} />
 
 			{isEditMode && (
 				<p className={`mb-3 text-sm font-semibold ${statusStyles[status]}`}>
 					{t(`status.${status}`)}
 				</p>
-			)}
-
-			{!isDelMode && post.status !== PostStatus.PENDING && post.status !== PostStatus.REJECTED && (
-				<div className="mb-3 flex items-center justify-between gap-2">
-					<FollowButton userId={post.creator._id} />
-
-					<div className="flex items-center gap-3">
-						<span
-							className="flex items-center gap-1 text-sm text-mlt-dark-6"
-							title={t("copyCount", { count: copyCount })}
-						>
-							<svg
-								fill="none"
-								height="16"
-								stroke="currentColor"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								viewBox="0 0 24 24"
-								width="16"
-							>
-								<rect height="13" rx="2" ry="2" width="13" x="9" y="9" />
-								<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-							</svg>
-							{copyCount}
-						</span>
-
-						<SaveButton count={post.savedCount} postId={post._id} />
-					</div>
-				</div>
 			)}
 
 			<p className="post_buttons_list">

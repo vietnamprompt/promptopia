@@ -6,9 +6,12 @@ import {
 	SocialPlatform,
 } from "@/interfaces/SocialLinks";
 
+const EMAIL_FORMAT = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]{2,}$/;
+
 /**
  * Checks and cleans a link of the profile, used by the form (browser) and by the API (server).
- * - an empty value is valid (it removes the link);
+ * - an empty value is valid (it removes the link), the field that has only the prefix is empty too;
+ * - the e-mail is a plain address (it is opened as "mailto:" by the icon);
  * - only https links are accepted ("http" is changed to "https"), no "javascript:" and so on;
  * - the social networks must be on their own domains.
  */
@@ -16,15 +19,26 @@ export function normalizeSocialLink(
 	platform: SocialPlatform,
 	input: unknown
 ): { value: string } | { error: true } {
-	const raw = typeof input === "string" ? input.trim() : "";
+	let raw = typeof input === "string" ? input.trim() : "";
+	const { prefix } = SOCIAL_CONFIG[platform];
 
-	if (!raw) {
+	// The form starts every field with the domain: if the user added nothing, the field is empty.
+	if (!raw || (prefix && raw.toLowerCase() === prefix.toLowerCase())) {
 		return { value: "" };
 	}
 
 	if (raw.length > SOCIAL_LINK_MAX) {
 		return { error: true };
 	}
+
+	if (platform === "email") {
+		const email = raw.replace(/^mailto:/i, "").trim().toLowerCase();
+
+		return EMAIL_FORMAT.test(email) ? { value: email } : { error: true };
+	}
+
+	// "https://tiktok.com/@" + "@name" gives a double "@".
+	raw = raw.replace(/\/@@+/, "/@");
 
 	// The user can type the link without "https://".
 	const withProtocol = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`;

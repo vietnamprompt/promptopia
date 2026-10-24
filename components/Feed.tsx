@@ -6,27 +6,39 @@ import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
-import { FEED_TABS, FeedTab } from "@/interfaces/Feed";
-import { AiCategories, PostTypeFromDb, SearchTypes } from "@/interfaces/Post";
+import {
+	FEED_TABS,
+	FeedTab,
+	SEARCH_PREFIX,
+	SearchMode,
+	parseSearchText,
+} from "@/interfaces/Feed";
+import { PostTypeFromDb } from "@/interfaces/Post";
 
 import { Path } from "@/interfaces/Path";
 
 import PostCardList from "./PostCardList";
-import CheckList, { ListItemType } from "./fragments/CheckList";
 import PostCardListLoading from "./PostCardListLoading";
 import IconEmbedSvg from "./fragments/IconEmbedSvg";
 
 const SEARCH_DELAY_MS = 500;
+const TAG_SUGGESTIONS = 5;
+
+interface TagInfo {
+	tag: string;
+	count: number;
+}
 
 const Feed: React.FC = () => {
 	const t = useTranslations("Feed");
-	const tCommon = useTranslations("Common");
 	const { session } = usePromptopiaContext();
 	const sessionUserId = session?.user?.id;
 
 	const [tab, setTab] = useState<FeedTab>(FeedTab.NEWEST);
 	const [searchText, setSearchText] = useState("");
 	const [query, setQuery] = useState(""); // the search text after the pause of the typing
+	const [focused, setFocused] = useState(false);
+	const [tags, setTags] = useState<TagInfo[] | null>(null); // the popular tags, loaded when needed
 
 	const [posts, setPosts] = useState<PostTypeFromDb[]>([]);
 	const [page, setPage] = useState(1);
@@ -36,38 +48,17 @@ const Feed: React.FC = () => {
 	const [loginRequired, setLoginRequired] = useState(false);
 	const [failed, setFailed] = useState(false);
 
-	const [aiCategories, setAiCategories] = useState<ListItemType[]>(
-		Object.values(AiCategories).map((aiCategory) => ({
-			label: tCommon(`aiCats.${aiCategory}`),
-			checked: true,
-			value: aiCategory,
-		}))
-	);
-
-	const [searchTypes, setSearchTypes] = useState<ListItemType[]>(
-		Object.values(SearchTypes).map((searchType) => ({
-			label: tCommon(`searchTypes.${searchType}`),
-			checked: true,
-			value: searchType,
-		}))
-	);
-
 	const searchParams = useSearchParams();
 	const tagId = searchParams.get("tag");
 	const wipe = searchParams.get("wipe");
 	const router = useRouter();
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	// Only the last request is used: a slow old answer must not replace a newer one.
 	const requestId = useRef(0);
 
-	const aiKey = aiCategories
-		.filter((item) => item.checked)
-		.map((item) => item.value)
-		.join(",");
-	const fieldsKey = searchTypes
-		.filter((item) => item.checked)
-		.map((item) => item.value)
-		.join(",");
+	const { mode, term } = parseSearchText(searchText);
+	const search = parseSearchText(query);
 
 	const loadPage = useCallback(
 		async (pageNumber: number) => {
@@ -76,9 +67,8 @@ const Feed: React.FC = () => {
 			const params = new URLSearchParams({
 				tab,
 				page: String(pageNumber),
-				q: query,
-				fields: fieldsKey,
-				ai: aiKey,
+				q: search.term,
+				mode: search.mode,
 			});
 
 			try {
@@ -121,17 +111,19 @@ const Feed: React.FC = () => {
 				}
 			}
 		},
-		[tab, query, fieldsKey, aiKey]
+		// "search" is a new object on every render, its parts are the real dependencies.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[tab, search.term, search.mode]
 	);
 
 	// The search starts after a pause of the typing.
 	useEffect(() => {
-		const timeout = setTimeout(() => setQuery(searchText.trim()), SEARCH_DELAY_MS);
+		const timeout = setTimeout(() => setQuery(searchText), SEARCH_DELAY_MS);
 
 		return () => clearTimeout(timeout);
 	}, [searchText]);
 
-	// The first page is loaded again when the tab, the search or the filters change
+	// The first page is loaded again when the tab or the search change
 	// (or when the user logs in: the "Following" tab depends on it).
 	useEffect(() => {
 		setLoading(true);
@@ -144,20 +136,26 @@ const Feed: React.FC = () => {
 		loadPage(page + 1);
 	};
 
-	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		e.preventDefault();
-		setSearchText(e.target.value);
-	};
+	// The popular tags are loaded once, when the user starts to look for a tag.
+	useEffect(() => {
+		if (mode !== SearchMode.TAG || tags !== null) {
+			return;
+		}
+
+		(async () => {
+			try {
+				const response = await fetch("/api/tags");
+				const data = await response.json();
+
+				setTags(data.tags ?? []);
+			} catch (error) {
+				setTags([]);
+			}
+		})();
+	}, [mode, tags]);
 
 	useEffect(() => {
 		if (tagId) {
-			setSearchTypes(
-				searchTypes.map((searchType) => ({
-					...searchType,
-					checked: searchType.value === SearchTypes.TAGS,
-				}))
-			);
-
 			setSearchText(`#${tagId}`);
 			setTab(FeedTab.NEWEST);
 			// The tag is in the search box now, the address is cleaned.
@@ -170,20 +168,6 @@ const Feed: React.FC = () => {
 		router.push(Path.HOME);
 
 		setSearchText("");
-
-		setSearchTypes(
-			searchTypes.map((searchType) => ({
-				...searchType,
-				checked: true,
-			}))
-		);
-
-		setAiCategories(
-			aiCategories.map((aiCategory) => ({
-				...aiCategory,
-				checked: true,
-			}))
-		);
 	};
 
 	useEffect(() => {
@@ -193,8 +177,18 @@ const Feed: React.FC = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [wipe]);
 
+	const chooseMode = (newMode: SearchMode) => {
+		setSearchText(`${SEARCH_PREFIX[newMode]}${term}`);
+		inputRef.current?.focus();
+	};
+
+	const chooseTag = (tag: string) => {
+		setSearchText(`#${tag}`);
+		setFocused(false);
+	};
+
 	const emptyMessage = () => {
-		if (query) {
+		if (search.term) {
 			return t("noResults");
 		}
 
@@ -202,14 +196,28 @@ const Feed: React.FC = () => {
 			case FeedTab.FOLLOWING:
 				return t("emptyFollowing");
 
-			case FeedTab.SAVED_30_DAYS:
-			case FeedTab.SAVED_ALL_TIME:
+			case FeedTab.TRENDING:
+			case FeedTab.TOP:
+				return t("emptyCopied");
+
+			case FeedTab.SAVED:
 				return t("emptySaved");
 
 			default:
 				return t("empty");
 		}
 	};
+
+	const tagMatches =
+		mode === SearchMode.TAG && tags
+			? tags.filter((item) => item.tag.includes(term.toLowerCase())).slice(0, TAG_SUGGESTIONS)
+			: [];
+
+	const suggestions: { mode: SearchMode; text: string; label: string }[] = [
+		{ mode: SearchMode.PROMPT, text: term, label: t("suggest.prompt") },
+		{ mode: SearchMode.TAG, text: `#${term}`, label: t("suggest.tag") },
+		{ mode: SearchMode.AUTHOR, text: `@${term}`, label: t("suggest.author") },
+	];
 
 	return (
 		<section className="feed">
@@ -235,31 +243,54 @@ const Feed: React.FC = () => {
 					)}
 
 					<input
+						ref={inputRef}
 						required
+						autoComplete="off"
 						className="form_input search_input"
 						placeholder={t("searchForPlaceholder")}
 						type="text"
 						value={searchText}
-						onChange={handleSearchChange}
+						onBlur={() => setFocused(false)}
+						onChange={(e) => setSearchText(e.target.value)}
+						onFocus={() => setFocused(true)}
 					/>
 				</div>
 
-				<div className="search_filters_container">
-					<CheckList
-						handleAssign={setAiCategories}
-						icon={{ size: 22, color: "mlt-orange-secondary" }}
-						items={aiCategories}
-						type="atLeastOneSelected"
-					/>
+				{focused && searchText.trim() && (
+					// onMouseDown keeps the focus in the input, so the click on a row is not lost.
+					<ul
+						className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg"
+						onMouseDown={(e) => e.preventDefault()}
+					>
+						{suggestions.map((item) => (
+							<li key={item.mode}>
+								<button
+									className={`flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm hover:bg-gray-50 ${
+										item.mode === mode ? "bg-orange-50" : ""
+									}`}
+									type="button"
+									onClick={() => chooseMode(item.mode)}
+								>
+									<span className="truncate font-medium text-mlt-dark-2">{item.text}</span>
+									<span className="shrink-0 text-xs text-mlt-dark-6">{item.label}</span>
+								</button>
+							</li>
+						))}
 
-					<CheckList
-						handleAssign={setSearchTypes}
-						icon={{ size: 22, color: "mlt-orange-primary", type: "radio" }}
-						items={searchTypes}
-						style={{ justifyContent: "flex-end", paddingRight: "0.25rem" }}
-						type="atLeastOneSelected"
-					/>
-				</div>
+						{tagMatches.map((item) => (
+							<li key={item.tag}>
+								<button
+									className="flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm hover:bg-gray-50"
+									type="button"
+									onClick={() => chooseTag(item.tag)}
+								>
+									<span className="truncate text-mlt-dark-4">#{item.tag}</span>
+									<span className="shrink-0 text-xs text-mlt-dark-6">{item.count}</span>
+								</button>
+							</li>
+						))}
+					</ul>
+				)}
 			</form>
 
 			<div className="mt-6 flex w-full flex-wrap gap-2" role="tablist">
@@ -273,6 +304,7 @@ const Feed: React.FC = () => {
 								: "bg-white text-mlt-dark-4 hover:text-mlt-orange-secondary"
 						}`}
 						role="tab"
+						title={t(`tabHints.${feedTab}`)}
 						type="button"
 						onClick={() => setTab(feedTab)}
 					>

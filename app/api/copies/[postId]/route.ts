@@ -20,6 +20,7 @@ import mongoose from "mongoose";
 import { authOptions } from "@/lib/auth-options";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import CopyEvent from "@/models/copy-event";
 import CopyMark from "@/models/copy-mark";
 import Post from "@/models/post";
 
@@ -106,6 +107,9 @@ export async function POST(request: NextRequest, { params }: Context) {
 				.lean()) as unknown as { copyCount?: number } | null;
 
 			copyCount = updated?.copyCount ?? copyCount + 1;
+
+			// The "Trending" tab counts these events of the last 7 days.
+			await CopyEvent.create({ post: postId });
 		}
 
 		const response = NextResponse.json({ counted, copyCount }, { status: 200 });

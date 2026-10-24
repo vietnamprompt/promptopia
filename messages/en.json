@@ -79,7 +79,7 @@
     }
   },
   "Feed": {
-    "searchForPlaceholder": "Search for a prompt, tag or user",
+    "searchForPlaceholder": "Search a prompt, #tag or @author",
     "empty": "There are no published prompts yet.",
     "searchFor": {
       "prompt": "Prompt",
@@ -88,8 +88,9 @@
     },
     "tabs": {
       "newest": "Newest",
-      "saved30": "Most saved (30 days)",
-      "savedAll": "Most saved (all time)",
+      "trending": "Trending",
+      "top": "Top",
+      "saved": "Most saved",
       "following": "Following"
     },
     "loadMore": "Load more",
@@ -98,7 +99,20 @@
     "emptyFollowing": "No prompts yet. Follow some authors and their newest prompts will appear here.",
     "emptySaved": "No saved prompts in this period yet.",
     "loginForFollowing": "Sign in to see the prompts of the authors you follow.",
-    "error": "Could not load the prompts. Please try again."
+    "error": "Could not load the prompts. Please try again.",
+    "suggest": {
+      "prompt": "Search in prompts",
+      "tag": "Search by tag",
+      "author": "Search by author"
+    },
+    "tabHints": {
+      "newest": "The newest prompts first",
+      "trending": "The most copied prompts of this week",
+      "top": "The most copied prompts of all time",
+      "saved": "The most saved prompts of all time",
+      "following": "The newest prompts of the authors you follow"
+    },
+    "emptyCopied": "No copied prompts yet."
   },
   "PostCard": {
     "altProfilePicture": "Prompt Creator Profile Picture",
@@ -146,7 +160,7 @@
     "usernameNotChosen": "You have not chosen a username yet, the other users see an automatic one.",
     "saveUsername": "Save username",
     "links": "Links",
-    "linksHint": "They are shown as icons on your public profile. Use the full link (https://...). Leave a field empty to remove the link.",
+    "linksHint": "Every field starts with the domain, add only your name after it. Leave a field with only the domain (or empty) to remove the link. The email you add here is shown as an icon on your public profile.",
     "email": "Email",
     "showEmail": "Show my email on my public profile",
     "emailHiddenNote": "When this is off, nobody else can see your email.",
@@ -164,7 +178,8 @@
       "usernameTaken": "This username is already taken.",
       "socialLinkInvalid": "The {platform} link is not valid. Use the full link, for example {example}",
       "avatarType": "Choose a JPG, PNG or WebP image.",
-      "avatarSize": "The image is too big."
+      "avatarSize": "The image is too big.",
+      "emailInvalid": "The email is not valid."
     },
     "savedPosts": "Saved posts",
     "savedPublic": "Show my saved posts on my public profile",

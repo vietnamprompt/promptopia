@@ -30,6 +30,23 @@ const BADGES: Record<SocialPlatform, { background: string; content: React.ReactN
 			</svg>
 		),
 	},
+	email: {
+		background: "#0ea5e9",
+		content: (
+			<svg
+				className="h-5 w-5"
+				fill="none"
+				stroke="currentColor"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="2"
+				viewBox="0 0 24 24"
+			>
+				<rect height="16" rx="2" width="20" x="2" y="4" />
+				<path d="m22 7-10 6L2 7" />
+			</svg>
+		),
+	},
 	facebook: { background: "#1877f2", content: <span className="text-lg">f</span> },
 	x: { background: "#000000", content: <span>X</span> },
 	zalo: { background: "#0068ff", content: <span className="text-[10px]">Zalo</span> },
@@ -72,8 +89,18 @@ interface Props {
 }
 
 const SocialLinks: React.FC<Props> = ({ links }) => {
-	// Only safe links are shown as links.
-	const items = SOCIAL_PLATFORMS.filter((platform) => links?.[platform]?.startsWith("https://"));
+	// Only safe links are shown as links: https links, and an e-mail address.
+	const isSafe = (platform: SocialPlatform) => {
+		const value = links?.[platform];
+
+		if (!value) {
+			return false;
+		}
+
+		return platform === "email" ? /^[^\s@]+@[^\s@]+$/.test(value) : value.startsWith("https://");
+	};
+
+	const items = SOCIAL_PLATFORMS.filter(isSafe);
 
 	if (items.length === 0) {
 		return null;
@@ -86,7 +113,7 @@ const SocialLinks: React.FC<Props> = ({ links }) => {
 					key={platform}
 					aria-label={SOCIAL_CONFIG[platform].label}
 					className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold !text-white drop-shadow transition-transform hover:scale-110"
-					href={links?.[platform]}
+					href={platform === "email" ? `mailto:${links?.[platform]}` : links?.[platform]}
 					rel="noopener noreferrer nofollow ugc"
 					style={{ background: BADGES[platform].background }}
 					target="_blank"

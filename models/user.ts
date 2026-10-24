@@ -49,6 +49,7 @@ const UserSchema = new Schema({
 	// The links to the website and to the social networks (see '@/interfaces/SocialLinks.ts').
 	socialLinks: {
 		website: { type: String, maxlength: SOCIAL_LINK_MAX },
+		email: { type: String, maxlength: SOCIAL_LINK_MAX },
 		facebook: { type: String, maxlength: SOCIAL_LINK_MAX },
 		x: { type: String, maxlength: SOCIAL_LINK_MAX },
 		zalo: { type: String, maxlength: SOCIAL_LINK_MAX },

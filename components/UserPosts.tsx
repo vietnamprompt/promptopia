@@ -44,7 +44,6 @@ const UserPosts: React.FC<UserProfileType> = ({ user, posts }) => {
 
 					<div className="flex flex-col gap-1">
 						<p className="font-semibold text-mlt-dark-2">@{user?.username}</p>
-						{user?.email && <p className="text-sm text-mlt-dark-6">{user.email}</p>}
 						<SocialLinks links={user?.socialLinks} />
 					</div>
 

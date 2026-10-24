@@ -17,7 +17,7 @@ interface Context {
 }
 
 /**
- * The public profile of a user. The e-mail is sent only if the user has chosen to show it.
+ * The public profile of a user. The account e-mail is never sent (the user can add a public e-mail in his links).
  * @example fetch(`/api/users/${useId}/data`)
  */
 export async function GET(request: NextRequest, { params }: Context) {
@@ -48,7 +48,6 @@ export async function GET(request: NextRequest, { params }: Context) {
 				username: getPublicUsername(user),
 				image: user.image,
 				description: user.description,
-				email: user.showEmail ? user.email : undefined,
 				socialLinks: cleanSocialLinks(user.socialLinks),
 				followersCount,
 				// The visitors see the "Saved" tab only if the user made his saved posts public.
