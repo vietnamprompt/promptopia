@@ -12,6 +12,7 @@ interface Member {
 	email: string;
 	image: string;
 	blocked: boolean;
+	trusted: boolean;
 	isAdmin: boolean;
 	postsCount: number;
 }
@@ -102,6 +103,35 @@ const AdminMembers: React.FC = () => {
 		}
 	};
 
+	// A trusted member's posts are approved automatically.
+	const toggleTrust = async (member: Member) => {
+		const trusted = !member.trusted;
+
+		setBusyId(member._id);
+		setError(false);
+
+		try {
+			const response = await fetch("/api/admin/users", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ id: member._id, trusted }),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed");
+			}
+
+			setMembers((previous) =>
+				previous.map((item) => (item._id === member._id ? { ...item, trusted } : item))
+			);
+		} catch (err) {
+			console.error(err);
+			setError(true);
+		} finally {
+			setBusyId("");
+		}
+	};
+
 	return (
 		<div className="mt-8 w-full">
 			<input
@@ -140,6 +170,11 @@ const AdminMembers: React.FC = () => {
 										{t("members.admin")}
 									</span>
 								)}
+								{member.trusted && (
+									<span className="ml-2 rounded bg-green-600 px-1.5 py-0.5 text-xs font-medium text-white">
+										{t("members.trusted")}
+									</span>
+								)}
 								{member.blocked && (
 									<span className="ml-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
 										{t("members.blocked")}
@@ -153,6 +188,17 @@ const AdminMembers: React.FC = () => {
 						<span className="text-sm text-mlt-dark-6">
 							{t("members.posts")}: {member.postsCount}
 						</span>
+
+						{!member.isAdmin && !member.blocked && (
+							<button
+								className="_btn gray_light"
+								disabled={busyId === member._id}
+								type="button"
+								onClick={() => toggleTrust(member)}
+							>
+								{member.trusted ? t("members.untrust") : t("members.trust")}
+							</button>
+						)}
 
 						{!member.isAdmin && (
 							<button

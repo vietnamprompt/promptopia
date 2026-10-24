@@ -296,6 +296,41 @@ const AdminSettings: React.FC = () => {
 			</label>
 
 			<div>
+				<p className="form_input_title">{t("autoApprove")}</p>
+				<p className="mt-1 text-xs text-mlt-dark-6">{t("autoApproveHint")}</p>
+
+				<input
+					className="form_input !w-32"
+					id="auto-approve"
+					max={SETTINGS_LIMITS.autoApproveMax}
+					min={0}
+					type="number"
+					value={settings.autoApproveAfter}
+					onChange={(e) =>
+						update({
+							autoApproveAfter: Math.min(
+								SETTINGS_LIMITS.autoApproveMax,
+								Math.max(0, Math.floor(Number(e.target.value) || 0))
+							),
+						})
+					}
+				/>
+			</div>
+
+			<label htmlFor="banned-words">
+				<span className="form_input_title">{t("bannedWords")}</span>
+				<textarea
+					className="form_input form_textarea"
+					id="banned-words"
+					maxLength={SETTINGS_LIMITS.bannedWords}
+					rows={5}
+					value={settings.bannedWords}
+					onChange={(e) => update({ bannedWords: e.target.value })}
+				/>
+				<span className="mt-1 block text-xs text-mlt-dark-6">{t("bannedWordsHint")}</span>
+			</label>
+
+			<div>
 				<p className="form_input_title">{t("announcement")}</p>
 
 				<label className="mt-2 flex cursor-pointer items-center gap-2 text-sm text-mlt-dark-4">

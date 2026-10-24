@@ -2,7 +2,7 @@
  * API for the members. Only the admins (see ADMIN_EMAILS) can use it.
  *
  * GET   /api/admin/users?q=text&page=1   =>  { users: [{ _id, name, username, email, image, blocked, isAdmin, postsCount }], total }
- * PATCH /api/admin/users   body: { id, blocked: boolean }
+ * PATCH /api/admin/users   body: { id, blocked?: boolean, trusted?: boolean }
  *
  * A blocked member can not sign in, and the API treats the member as not logged in
  * (see 'session()' in 'lib/auth-options.ts').
@@ -28,6 +28,7 @@ interface MemberDoc {
 	email?: string;
 	image?: string;
 	blocked?: boolean;
+	trusted?: boolean;
 }
 
 async function denyIfNotAdmin() {
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
 				.sort({ _id: -1 })
 				.skip((page - 1) * PAGE_SIZE)
 				.limit(PAGE_SIZE)
-				.select("name username email image blocked")
+				.select("name username email image blocked trusted")
 				.lean(),
 			User.countDocuments(filter),
 		]);
@@ -95,6 +96,7 @@ export async function GET(request: NextRequest) {
 					email: member.email ?? "",
 					image: member.image ?? "",
 					blocked: !!member.blocked,
+					trusted: !!member.trusted,
 					isAdmin: isAdminEmail(member.email),
 					postsCount: countMap.get(String(member._id)) ?? 0,
 				})),
@@ -119,7 +121,7 @@ export async function PATCH(request: NextRequest) {
 		const body = await request.json().catch(() => null);
 		const id = String(body?.id ?? "");
 
-		if (!mongoose.isValidObjectId(id) || typeof body?.blocked !== "boolean") {
+		if (!mongoose.isValidObjectId(id) || typeof body?.blocked !== "boolean" && typeof body?.trusted !== "boolean") {
 			return NextResponse.json({ error: "Invalid request!" }, { status: 400 });
 		}
 
@@ -131,15 +133,25 @@ export async function PATCH(request: NextRequest) {
 			return NextResponse.json({ error: "User not found!" }, { status: 404 });
 		}
 
-		// The admins can not be blocked (this also protects the admin himself).
-		if (isAdminEmail(user.email) || user.email === email) {
-			return NextResponse.json({ error: "This account can not be blocked!" }, { status: 400 });
+		if (typeof body.blocked === "boolean") {
+			// The admins can not be blocked (this also protects the admin himself).
+			if (isAdminEmail(user.email) || user.email === email) {
+				return NextResponse.json({ error: "This account can not be blocked!" }, { status: 400 });
+			}
+
+			user.blocked = body.blocked;
 		}
 
-		user.blocked = body.blocked;
+		if (typeof body.trusted === "boolean") {
+			user.trusted = body.trusted;
+		}
+
 		await user.save();
 
-		return NextResponse.json({ _id: String(user._id), blocked: !!user.blocked }, { status: 200 });
+		return NextResponse.json(
+			{ _id: String(user._id), blocked: !!user.blocked, trusted: !!user.trusted },
+			{ status: 200 }
+		);
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to update the member!" }, { status: 500 });
 	}

@@ -182,7 +182,8 @@
       "avatarType": "Hãy chọn ảnh JPG, PNG hoặc WebP.",
       "avatarSize": "Ảnh quá lớn.",
       "emailInvalid": "Email không hợp lệ.",
-      "bioTooLong": "Phần giới thiệu quá dài."
+      "bioTooLong": "Phần giới thiệu quá dài.",
+      "bannedWord": "Nội dung có chứa từ không được phép."
     },
     "savedPosts": "Bài đã lưu",
     "savedPublic": "Hiện các bài đã lưu trên hồ sơ công khai",
@@ -207,7 +208,8 @@
       "rejected": "Đã từ chối",
       "approved": "Đã duyệt",
       "members": "Thành viên",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "stats": "Thống kê"
     },
     "approve": "Duyệt",
     "reject": "Từ chối",
@@ -231,7 +233,10 @@
       "more": "Xem thêm",
       "confirmBlock": "Chặn thành viên này? Họ sẽ không đăng nhập hoặc đăng bài được nữa.",
       "confirmUnblock": "Bỏ chặn thành viên này?",
-      "cannot": "Không thể chặn tài khoản này."
+      "cannot": "Không thể chặn tài khoản này.",
+      "trust": "Tin cậy",
+      "untrust": "Bỏ tin cậy",
+      "trusted": "Tin cậy"
     },
     "settings": {
       "title": "Cài đặt trang web",
@@ -262,7 +267,25 @@
       "announcement": "Thông báo",
       "announcementShow": "Hiện thông báo ở đầu mọi trang",
       "announcementText": "Nội dung thông báo",
-      "preview": "Xem trước trên Google"
+      "preview": "Xem trước trên Google",
+      "autoApprove": "Tự động duyệt bài",
+      "autoApproveHint": "Thành viên có số bài đã duyệt đạt mức này sẽ được duyệt tự động các bài tiếp theo. 0 = tắt. Admin và thành viên được đánh dấu tin cậy (ở tab Thành viên) luôn được duyệt tự động.",
+      "bannedWords": "Danh sách từ cấm",
+      "bannedWordsHint": "Mỗi dòng một từ hoặc cụm từ. Bài viết, tên và phần giới thiệu có chứa từ này sẽ bị từ chối. Không phân biệt hoa thường và dấu, chỉ khớp nguyên từ."
+    },
+    "stats": {
+      "members": "Thành viên",
+      "posts": "Bài viết",
+      "total": "Tổng",
+      "today": "Hôm nay",
+      "last7": "7 ngày qua",
+      "trusted": "Tin cậy",
+      "blocked": "Đã chặn",
+      "pending": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "rejected": "Đã từ chối",
+      "chartUsers": "Thành viên mới mỗi ngày (30 ngày)",
+      "chartPosts": "Bài viết mới mỗi ngày (30 ngày)"
     }
   },
   "Follow": {

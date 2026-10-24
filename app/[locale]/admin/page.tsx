@@ -8,12 +8,14 @@ import Header from "@/components/Header";
 import PostCard from "@/components/PostCard";
 import AdminMembers from "@/components/AdminMembers";
 import AdminSettings from "@/components/AdminSettings";
+import AdminStats from "@/components/AdminStats";
 
 const tabs = [PostStatus.PENDING, PostStatus.REJECTED, PostStatus.APPROVED];
 const MEMBERS = "members";
 const SETTINGS = "settings";
+const STATS = "stats";
 
-type AdminTab = PostStatus | typeof MEMBERS | typeof SETTINGS;
+type AdminTab = PostStatus | typeof MEMBERS | typeof SETTINGS | typeof STATS;
 
 const Admin_Page: React.FC = () => {
 	const t = useTranslations("Admin");
@@ -27,7 +29,7 @@ const Admin_Page: React.FC = () => {
 	const isAdmin = !!session?.user?.isAdmin;
 
 	const loadPosts = useCallback(async () => {
-		if (tab === MEMBERS || tab === SETTINGS) {
+		if (tab === MEMBERS || tab === SETTINGS || tab === STATS) {
 			return;
 		}
 
@@ -143,6 +145,14 @@ const Admin_Page: React.FC = () => {
 				</button>
 
 				<button
+					className={`_btn ${tab === STATS ? "orange_invert" : "gray_light"}`}
+					type="button"
+					onClick={() => setTab(STATS)}
+				>
+					{t("tabs.stats")}
+				</button>
+
+				<button
 					className={`_btn ${tab === SETTINGS ? "orange_invert" : "gray_light"}`}
 					type="button"
 					onClick={() => setTab(SETTINGS)}
@@ -155,6 +165,8 @@ const Admin_Page: React.FC = () => {
 
 			{tab === MEMBERS ? (
 				<AdminMembers />
+			) : tab === STATS ? (
+				<AdminStats />
 			) : tab === SETTINGS ? (
 				<AdminSettings />
 			) : loading ? (

@@ -18,6 +18,7 @@ import { authOptions } from "@/lib/auth-options";
 import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import { bannedPostResponse, checkBannedWords, decidePostStatus } from "@/lib/post-rules";
 import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import { normalizeSharePlatforms } from "@/interfaces/SharePlatform";
 import { addSavedCounts } from "@/lib/engagement";
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest, { params }: Context) {
 }
 
 export async function POST(request: NextRequest) {
-	const { userId } = await getUserInfo();
+	const { userId, isAdmin } = await getUserInfo();
 
 	if (!userId) {
 		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
@@ -104,6 +105,12 @@ export async function POST(request: NextRequest) {
 			await request.json();
 
 		await connectToMongoDb();
+
+		const banned = await checkBannedWords({ title, description, prompt, tags });
+
+		if (banned) {
+			return bannedPostResponse(banned);
+		}
 
 		// The creator and the status are never taken from the request body.
 		const newPost = new Post({
@@ -116,7 +123,7 @@ export async function POST(request: NextRequest) {
 			aiCategory,
 			link,
 			image,
-			status: PostStatus.PENDING,
+			status: await decidePostStatus(userId, isAdmin),
 		});
 
 		await newPost.save();
@@ -132,7 +139,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function updatePost(request: NextRequest, { params }: Context) {
-	const { userId } = await getUserInfo();
+	const { userId, isAdmin } = await getUserInfo();
 
 	if (!userId) {
 		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
@@ -150,6 +157,12 @@ async function updatePost(request: NextRequest, { params }: Context) {
 
 		await connectToMongoDb();
 
+		const banned = await checkBannedWords({ title, description, prompt, tags });
+
+		if (banned) {
+			return bannedPostResponse(banned);
+		}
+
 		const post = await Post.findOne({ _id: postId });
 
 		if (!post) {
@@ -161,7 +174,7 @@ async function updatePost(request: NextRequest, { params }: Context) {
 			return NextResponse.json({ error: "Forbidden!" }, { status: 403 });
 		}
 
-		// Every edited post must be approved again by an admin.
+		// An edited post must be approved again by an admin (unless the creator is an admin or is trusted).
 		post.set({
 			title,
 			description,
@@ -171,7 +184,7 @@ async function updatePost(request: NextRequest, { params }: Context) {
 			aiCategory,
 			link,
 			image,
-			status: PostStatus.PENDING,
+			status: await decidePostStatus(userId, isAdmin),
 		});
 
 		await post.save();

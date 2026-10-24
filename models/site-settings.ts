@@ -14,6 +14,8 @@ const SiteSettingsSchema = new Schema({
 	googleVerification: { type: String },
 	announcementEnabled: { type: Boolean, default: false },
 	announcementText: { type: String },
+	autoApproveAfter: { type: Number, default: 0 },
+	bannedWords: { type: String },
 	seo: {
 		en: SeoSchema,
 		vi: SeoSchema,

@@ -27,10 +27,15 @@ export async function GET() {
 		await connectToMongoDb();
 
 		const doc = await SiteSettingsModel.findOne({ key: "main" }).select("-logoData").lean();
+		const settings = normalizeSettings(doc as Parameters<typeof normalizeSettings>[0]);
+		const session = await getServerSession(authOptions);
 
-		return NextResponse.json(normalizeSettings(doc as Parameters<typeof normalizeSettings>[0]), {
-			status: 200,
-		});
+		// The list of the banned words is only for the admins (the spammers should not see it).
+		if (!isAdminEmail(session?.user?.email)) {
+			return NextResponse.json({ ...settings, bannedWords: "", autoApproveAfter: 0 }, { status: 200 });
+		}
+
+		return NextResponse.json(settings, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to retrieve the settings!" }, { status: 500 });
 	}
@@ -66,6 +71,17 @@ export async function PUT(request: NextRequest) {
 			googleVerification: text(body.googleVerification, SETTINGS_LIMITS.googleVerification),
 			announcementEnabled: body.announcementEnabled === true,
 			announcementText: text(body.announcementText, SETTINGS_LIMITS.announcement),
+			autoApproveAfter: Math.min(
+				SETTINGS_LIMITS.autoApproveMax,
+				Math.max(0, Math.floor(Number(body.autoApproveAfter) || 0))
+			),
+			// One word or phrase per line (the commas also separate the words).
+			bannedWords: String(body.bannedWords ?? "")
+				.split(/[\n,]+/)
+				.map((word) => word.trim())
+				.filter(Boolean)
+				.join("\n")
+				.slice(0, SETTINGS_LIMITS.bannedWords),
 		};
 
 		SEO_LOCALES.forEach((locale) => {

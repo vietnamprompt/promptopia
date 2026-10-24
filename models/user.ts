@@ -38,6 +38,11 @@ const UserSchema = new Schema({
 		type: Boolean,
 		default: false,
 	},
+	// The posts of a trusted member are approved automatically (set by an admin).
+	trusted: {
+		type: Boolean,
+		default: false,
+	},
 	name: {
 		type: String,
 	},

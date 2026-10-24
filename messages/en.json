@@ -182,7 +182,8 @@
       "avatarType": "Choose a JPG, PNG or WebP image.",
       "avatarSize": "The image is too big.",
       "emailInvalid": "The email is not valid.",
-      "bioTooLong": "The bio is too long."
+      "bioTooLong": "The bio is too long.",
+      "bannedWord": "Your text contains a word that is not allowed."
     },
     "savedPosts": "Saved posts",
     "savedPublic": "Show my saved posts on my public profile",
@@ -207,7 +208,8 @@
       "rejected": "Rejected",
       "approved": "Approved",
       "members": "Members",
-      "settings": "Settings"
+      "settings": "Settings",
+      "stats": "Statistics"
     },
     "approve": "Approve",
     "reject": "Reject",
@@ -231,7 +233,10 @@
       "more": "Show more",
       "confirmBlock": "Block this member? They will not be able to sign in or post.",
       "confirmUnblock": "Unblock this member?",
-      "cannot": "This account can not be blocked."
+      "cannot": "This account can not be blocked.",
+      "trust": "Trust",
+      "untrust": "Remove trust",
+      "trusted": "Trusted"
     },
     "settings": {
       "title": "Site settings",
@@ -262,7 +267,25 @@
       "announcement": "Announcement",
       "announcementShow": "Show an announcement at the top of every page",
       "announcementText": "Text of the announcement",
-      "preview": "Preview in Google"
+      "preview": "Preview in Google",
+      "autoApprove": "Automatic approval",
+      "autoApproveHint": "A member whose number of approved posts reaches this value gets the next posts approved automatically. 0 = off. Admins and trusted members (see the tab Members) are always approved automatically.",
+      "bannedWords": "Banned words",
+      "bannedWordsHint": "One word or phrase per line. Posts, names and bios that contain one of them are refused. The accents and the case are ignored, only whole words are matched."
+    },
+    "stats": {
+      "members": "Members",
+      "posts": "Posts",
+      "total": "Total",
+      "today": "Today",
+      "last7": "Last 7 days",
+      "trusted": "Trusted",
+      "blocked": "Blocked",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "chartUsers": "New members per day (30 days)",
+      "chartPosts": "New posts per day (30 days)"
     }
   },
   "Follow": {

@@ -14,6 +14,7 @@ import { authOptions } from "@/lib/auth-options";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { DESCRIPTION_MAX, NAME_MAX, validateUsername } from "@/lib/profile-rules";
 import { cleanSocialLinks, normalizeSocialLink } from "@/lib/social-links";
+import { checkBannedWords } from "@/lib/post-rules";
 import User from "@/models/user";
 
 export const dynamic = "force-dynamic";
@@ -86,6 +87,10 @@ export async function PATCH(request: NextRequest) {
 
 	if (!body || typeof body !== "object") {
 		return fail("generic", 400);
+	}
+
+	if (await checkBannedWords({ name: body.name, description: body.description })) {
+		return fail("bannedWord", 400);
 	}
 
 	if ("name" in body) {
