@@ -10,13 +10,14 @@ import {
 	SOCIAL_PLATFORMS,
 	SocialPlatform,
 } from "@/interfaces/SocialLinks";
-import { NAME_MAX, USERNAME_MAX, USERNAME_MIN, validateUsername } from "@/lib/profile-rules";
+import { DESCRIPTION_MAX, NAME_MAX, USERNAME_MAX, USERNAME_MIN, validateUsername } from "@/lib/profile-rules";
 import { normalizeSocialLink } from "@/lib/social-links";
 
 interface OwnProfile {
 	_id: string;
 	email: string;
 	name?: string;
+	description?: string;
 	username: string;
 	usernameChosen: boolean;
 	image?: string;
@@ -109,6 +110,7 @@ const ProfileSettings: React.FC = () => {
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [profile, setProfile] = useState<OwnProfile | null>(null);
 	const [name, setName] = useState("");
+	const [bio, setBio] = useState("");
 	const [savedPublic, setSavedPublic] = useState(false);
 	const [links, setLinks] = useState<Record<string, string>>({});
 	const [username, setUsername] = useState("");
@@ -127,6 +129,7 @@ const ProfileSettings: React.FC = () => {
 
 			setProfile(user);
 			setName(user.name ?? "");
+			setBio(user.description ?? "");
 			setSavedPublic(!!user.savedPublic);
 			setLinks(withPrefixes(user.socialLinks));
 			setUsername(user.usernameChosen ? user.username : "");
@@ -220,6 +223,7 @@ const ProfileSettings: React.FC = () => {
 
 		send({
 			name: cleanName,
+			description: bio,
 			savedPublic,
 			socialLinks: cleanLinks,
 			...(usernameChanged ? { username: newUsername } : {}),
@@ -310,6 +314,23 @@ const ProfileSettings: React.FC = () => {
 					value={name}
 					onChange={(e) => setName(e.target.value)}
 				/>
+			</label>
+
+			<label htmlFor="profile-bio">
+				<span className="form_input_title">{t("bio")}</span>
+
+				<textarea
+					className="form_input form_textarea"
+					id="profile-bio"
+					maxLength={DESCRIPTION_MAX}
+					placeholder={t("bioPlaceholder")}
+					rows={4}
+					value={bio}
+					onChange={(e) => setBio(e.target.value)}
+				/>
+				<span className="mt-1 block text-xs text-mlt-dark-6">
+					{t("bioHint", { max: DESCRIPTION_MAX })} ({bio.length} / {DESCRIPTION_MAX})
+				</span>
 			</label>
 
 			<div>

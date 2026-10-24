@@ -128,6 +128,10 @@ const Nav: React.FC = () => {
 								{t("createPrompt")}
 							</Link>
 
+							<Link className="_btn gray_invert " href={Path.PROFILE}>
+								{t("myPosts")}
+							</Link>
+
 							{session.user.isAdmin && (
 								<Link className="_btn orange_invert" href={Path.ADMIN}>
 									{t("admin")}

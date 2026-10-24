@@ -39,7 +39,8 @@
     "myProfile": "Hồ sơ của tôi",
     "admin": "Quản trị",
     "languageEn": "English",
-    "languageVi": "Tiếng Việt"
+    "languageVi": "Tiếng Việt",
+    "myPosts": "Prompt đã đăng"
   },
   "Home": {
     "headingLn1": "Khám phá & Chia sẻ",
@@ -146,7 +147,6 @@
   },
   "Profile": {
     "description": "Chào mừng bạn đến trang hồ sơ. Tại đây bạn có thể xem, sửa hoặc xóa tất cả bài viết của mình.",
-    "accountRemoveDisclaimer": "Nếu bạn muốn xóa tài khoản, vui lòng liên hệ { email } và chúng tôi sẽ xóa giúp bạn.",
     "placeholderUser": "Người dùng...",
     "placeholderUserDescription": "Giới thiệu người dùng...",
     "moderationNote": "Prompt mới và prompt đã sửa sẽ hiện trên trang chủ sau khi được quản trị viên duyệt.",
@@ -181,14 +181,18 @@
       "socialLinkInvalid": "Liên kết {platform} không hợp lệ. Hãy dùng liên kết đầy đủ, ví dụ {example}",
       "avatarType": "Hãy chọn ảnh JPG, PNG hoặc WebP.",
       "avatarSize": "Ảnh quá lớn.",
-      "emailInvalid": "Email không hợp lệ."
+      "emailInvalid": "Email không hợp lệ.",
+      "bioTooLong": "Phần giới thiệu quá dài."
     },
     "savedPosts": "Bài đã lưu",
     "savedPublic": "Hiện các bài đã lưu trên hồ sơ công khai",
     "savedPublicNote": "Khi tắt, chỉ mình bạn thấy các bài đã lưu.",
     "notFound": "Người dùng này không tồn tại.",
     "backHome": "Về trang chủ",
-    "loading": "Đang tải..."
+    "loading": "Đang tải...",
+    "bio": "Giới thiệu bản thân (không bắt buộc)",
+    "bioPlaceholder": "Viết vài dòng giới thiệu về bạn",
+    "bioHint": "Tối đa {max} ký tự. Nội dung này hiện trên hồ sơ công khai."
   },
   "Footer": {
     "projectDesc": "Xem dự án tại",

@@ -2,6 +2,7 @@
  * The rules for the profile, used by the form (browser) and by the API (server).
  */
 export const NAME_MAX = 50;
+export const DESCRIPTION_MAX = 300;
 export const USERNAME_MIN = 4;
 export const USERNAME_MAX = 30;
 export const AVATAR_MAX_BYTES = 300 * 1024; // the browser resizes the avatar to 256x256, it is much smaller

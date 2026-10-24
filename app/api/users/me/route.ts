@@ -2,7 +2,7 @@
  * The profile of the logged in user (only the user himself can read and change it).
  *
  * GET   /api/users/me
- * PATCH /api/users/me   body: { name?, showEmail?, savedPublic?, username?, socialLinks? }
+ * PATCH /api/users/me   body: { name?, description?, showEmail?, savedPublic?, username?, socialLinks? }
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -12,7 +12,7 @@ import { SOCIAL_PLATFORMS } from "@/interfaces/SocialLinks";
 import { isAdminEmail } from "@/lib/admin";
 import { authOptions } from "@/lib/auth-options";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
-import { NAME_MAX, validateUsername } from "@/lib/profile-rules";
+import { DESCRIPTION_MAX, NAME_MAX, validateUsername } from "@/lib/profile-rules";
 import { cleanSocialLinks, normalizeSocialLink } from "@/lib/social-links";
 import User from "@/models/user";
 
@@ -22,6 +22,7 @@ interface UserDoc {
 	_id: unknown;
 	email: string;
 	name?: string;
+	description?: string;
 	username: string;
 	usernameChosen?: boolean;
 	image?: string;
@@ -35,6 +36,7 @@ function toOwnProfile(user: UserDoc) {
 		_id: String(user._id),
 		email: user.email,
 		name: user.name,
+		description: user.description ?? "",
 		username: user.username,
 		usernameChosen: !!user.usernameChosen,
 		image: user.image,
@@ -98,6 +100,17 @@ export async function PATCH(request: NextRequest) {
 		}
 
 		user.name = name;
+	}
+
+	if ("description" in body) {
+		const description =
+			typeof body.description === "string" ? body.description.replace(/\s+/g, " ").trim() : "";
+
+		if (description.length > DESCRIPTION_MAX) {
+			return fail("bioTooLong", 400);
+		}
+
+		user.description = description;
 	}
 
 	if ("showEmail" in body) {

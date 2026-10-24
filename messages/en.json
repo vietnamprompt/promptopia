@@ -39,7 +39,8 @@
     "myProfile": "My Profile",
     "admin": "Admin",
     "languageEn": "English",
-    "languageVi": "Tiếng Việt"
+    "languageVi": "Tiếng Việt",
+    "myPosts": "My prompts"
   },
   "Home": {
     "headingLn1": "Discover & Share",
@@ -146,7 +147,6 @@
   },
   "Profile": {
     "description": "Welcome to your profile page. Here you can see, edit or delete all your posts.",
-    "accountRemoveDisclaimer": "If you need to remove your account, please contact us at { email } and we will do it for you.",
     "placeholderUser": "User...",
     "placeholderUserDescription": "User description...",
     "moderationNote": "New and edited prompts appear on the homepage after they are approved by an admin.",
@@ -181,14 +181,18 @@
       "socialLinkInvalid": "The {platform} link is not valid. Use the full link, for example {example}",
       "avatarType": "Choose a JPG, PNG or WebP image.",
       "avatarSize": "The image is too big.",
-      "emailInvalid": "The email is not valid."
+      "emailInvalid": "The email is not valid.",
+      "bioTooLong": "The bio is too long."
     },
     "savedPosts": "Saved posts",
     "savedPublic": "Show my saved posts on my public profile",
     "savedPublicNote": "When this is off, only you can see the posts you saved.",
     "notFound": "This user does not exist.",
     "backHome": "Back to the homepage",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "bio": "Short bio (optional)",
+    "bioPlaceholder": "Write a few words about yourself",
+    "bioHint": "Up to {max} characters. It is shown on your public profile."
   },
   "Footer": {
     "projectDesc": "Check out the project at",
