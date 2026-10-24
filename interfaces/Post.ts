@@ -7,7 +7,7 @@ import { SharePlatform } from "@/interfaces/SharePlatform";
 export const POST_LIMITS = {
 	titleMin: 5,
 	titleMax: 80,
-	descriptionMin: 0,
+	descriptionMin: 10,
 	descriptionMax: 300,
 	promptMax: 5000,
 	tagsMax: 5,

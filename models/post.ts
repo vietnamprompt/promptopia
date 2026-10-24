@@ -35,6 +35,7 @@ const PostSchema = new Schema(
 		description: {
 			type: String,
 			trim: true,
+			required: [true, "Description is required!"],
 			minlength: [
 				POST_LIMITS.descriptionMin,
 				`Description must have at least ${POST_LIMITS.descriptionMin} characters!`,
@@ -69,6 +70,10 @@ const PostSchema = new Schema(
 		aiCategory: {
 			type: String, // actually it is a value of AiCategories
 			required: [true, "AI category type is required!"],
+		},
+		link: {
+			type: String,
+			match: [/^https:\/\//, "You need to use https:// for the Link!"],
 		},
 		image: {
 			type: Schema.Types.ObjectId,
