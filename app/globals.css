@@ -234,19 +234,17 @@ body {
 }
 
 ._btn:active {
-	@apply drop-shadow-md opacity-75;
+	@apply opacity-75;
 }
 
 ._btn.orange_invert {
 	@apply bg-mlt-orange-secondary text-white border border-transparent
-	hover:bg-white hover:text-mlt-orange-primary hover:border-mlt-orange-secondary
-	hover:drop-shadow-lg;
+	hover:bg-white hover:text-mlt-orange-primary hover:border-mlt-orange-secondary;
 }
 
 ._btn.red_invert {
 	@apply bg-red-600 text-white border border-transparent
-	hover:bg-white hover:text-red-700 hover:border-red-600
-	hover:drop-shadow-lg;
+	hover:bg-white hover:text-red-700 hover:border-red-600;
 }
 
 ._btn.gray_invert {
@@ -268,7 +266,7 @@ body {
 .login_provider_btn {
 	@apply border border-mlt-gray-4 rounded-full
 	bg-white hover:bg-mlt-orange-secondary hover:border-mlt-orange-secondary
-	transition-all opacity-90 drop-shadow-md w-10 h-10
+	transition-all opacity-90 w-10 h-10
 	flex justify-center items-center;
 
 	/* duration-300 */
@@ -350,8 +348,8 @@ body {
 /* https://tailwindcss-glassmorphism.vercel.app/ */
 .glassmorphism {
 	/* @apply rounded-xl border border-gray-200 bg-white/20 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur p-5; */
-	@apply rounded-xl border-2 border-mlt-purple-secondary/40 bg-mlt-purple-secondary/10
-	shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] drop-shadow-lg backdrop-blur p-5;
+	@apply rounded-xl border border-mlt-purple-secondary/40 bg-mlt-purple-secondary/10
+	shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.1)] backdrop-blur p-5;
 }
 
 .prompt_layout {
@@ -368,9 +366,9 @@ body {
 
 .page_footer {
 	@apply mt-24 p-6 pb-4 h-fit  rounded-t-xl
-	break-inside-avoid border-2 border-mlt-gray-5/80 border-b-0 bg-mlt-gray-6/20 bg-clip-padding 
+	break-inside-avoid border border-mlt-gray-5/80 border-b-0 bg-mlt-gray-6/20 bg-clip-padding 
 	backdrop-blur-lg backdrop-filter
-	drop-shadow-lg shadow-[inset_10px_-50px_94px_0_rgb(176,123,255,0.1)]
+	shadow-[inset_10px_-50px_94px_0_rgb(176,123,255,0.06)]
 	
 	w-full md:w-max min-w-min
 	gap-8 lg:gap-10 2xl:gap-12
@@ -409,7 +407,7 @@ body {
 }
 
 .form_input {
-	@apply w-full flex rounded-lg mt-2 p-3 text-base text-mlt-dark-0 opacity-70 outline-0 active:drop-shadow-lg focus:drop-shadow-lg transition-all duration-300 active:opacity-95 focus:opacity-95 hover:opacity-95 active:text-mlt-dark-4 focus:text-mlt-dark-4 focus:outline-0;
+	@apply w-full flex rounded-lg mt-2 p-3 text-base text-mlt-dark-0 opacity-70 outline-0 transition-all duration-300 active:opacity-95 focus:opacity-95 hover:opacity-95 active:text-mlt-dark-4 focus:text-mlt-dark-4 focus:outline-0;
 }
 
 .form_input:focus-visible {
@@ -417,8 +415,8 @@ body {
 }
 
 .search_input {
-	@apply opacity-100 active:opacity-100 focus:opacity-100 drop-shadow-md
-	border-2 border-mlt-purple-secondary/30 font-medium text-mlt-dark-5
+	@apply opacity-100 active:opacity-100 focus:opacity-100
+	border border-mlt-purple-secondary/30 font-medium text-mlt-dark-5
 	active:border-mlt-purple-secondary/60 focus:border-mlt-purple-secondary/60;
 }
 
@@ -429,10 +427,9 @@ body {
 .input_file_wrapper {
 	@apply w-full flex rounded-lg mt-2 px-3 py-2 outline-0 gap-3 items-center justify-center
 	text-lg text-mlt-purple-secondary/100
-	active:drop-shadow-lg focus:drop-shadow-lg hover:drop-shadow-lg 
 	transition-all duration-300 cursor-pointer
 	bg-white opacity-70 active:opacity-70 focus:opacity-70 hover:opacity-95
-	border-2 border-mlt-purple-secondary/30 active:border-mlt-purple-secondary/30 focus:border-mlt-purple-secondary/30 hover:border-mlt-purple-secondary/60;
+	border border-mlt-purple-secondary/30 active:border-mlt-purple-secondary/30 focus:border-mlt-purple-secondary/30 hover:border-mlt-purple-secondary/60;
 
 	letter-spacing: 0.4px;
 }
@@ -446,7 +443,7 @@ body {
 }
 
 .wipe_search_btn {
-	@apply absolute z-10 right-4 translate-y-[3.5px] hover:brightness-75 hover:saturate-150 transition-all hover:drop-shadow-lg duration-300;
+	@apply absolute z-10 right-4 translate-y-[3.5px] hover:brightness-75 hover:saturate-150 transition-all duration-300;
 }
 
 .search_filters_container {
@@ -522,7 +519,7 @@ body {
 }
 
 .post_card_del_mode {
-	@apply flex-1 break-inside-avoid rounded-xl border-2 border-red-300/80 bg-white/20 bg-clip-padding p-6 pb-4 backdrop-blur-lg backdrop-filter w-full h-fit 
+	@apply flex-1 break-inside-avoid rounded-xl border border-red-300/80 bg-white/20 bg-clip-padding p-6 pb-4 backdrop-blur-lg backdrop-filter w-full h-fit 
 	transition-all duration-300 
 	shadow-[inset_10px_-50px_94px_0_rgb(252,165,165,0.1),0_1px_4px_0_rgb(0,0,0,0.14)];
 
