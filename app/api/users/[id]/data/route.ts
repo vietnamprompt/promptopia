@@ -5,9 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
-import { getPublicUsername } from "@/lib/public-user";
-import { cleanSocialLinks } from "@/lib/social-links";
-import Follow from "@/models/follow";
+import { toPublicProfile } from "@/lib/public-profile";
 import User from "@/models/user";
 
 export const dynamic = "force-dynamic";
@@ -39,22 +37,7 @@ export async function GET(request: NextRequest, { params }: Context) {
 			return failed();
 		}
 
-		const followersCount = await Follow.countDocuments({ following: user._id });
-
-		return NextResponse.json(
-			{
-				_id: user._id,
-				name: user.name,
-				username: getPublicUsername(user),
-				image: user.image,
-				description: user.description,
-				socialLinks: cleanSocialLinks(user.socialLinks),
-				followersCount,
-				// The visitors see the "Saved" tab only if the user made his saved posts public.
-				savedPublic: !!user.savedPublic,
-			},
-			{ status: 200 }
-		);
+		return NextResponse.json(await toPublicProfile(user), { status: 200 });
 	} catch (error) {
 		return failed();
 	}

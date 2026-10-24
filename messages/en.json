@@ -37,7 +37,9 @@
     "altLogo": "Promptopia.MLT Logo",
     "altUserProfile": "User Profile",
     "myProfile": "My Profile",
-    "admin": "Admin"
+    "admin": "Admin",
+    "languageEn": "English",
+    "languageVi": "Tiếng Việt"
   },
   "Home": {
     "headingLn1": "Discover & Share",
@@ -155,7 +157,7 @@
     "name": "Display name",
     "namePlaceholder": "Your name",
     "username": "Username",
-    "usernameHint": "Use {min}-{max} lowercase letters, digits, dots or underscores. You can change it at any time, the link of your profile does not change.",
+    "usernameHint": "Use {min}-{max} lowercase letters, digits, dots or underscores. Your profile address is /@username. If you change the username, the old address stops working.",
     "usernamePlaceholder": "your.username",
     "usernameNotChosen": "You have not chosen a username yet, the other users see an automatic one.",
     "saveUsername": "Save username",
@@ -183,7 +185,10 @@
     },
     "savedPosts": "Saved posts",
     "savedPublic": "Show my saved posts on my public profile",
-    "savedPublicNote": "When this is off, only you can see the posts you saved."
+    "savedPublicNote": "When this is off, only you can see the posts you saved.",
+    "notFound": "This user does not exist.",
+    "backHome": "Back to the homepage",
+    "loading": "Loading..."
   },
   "Footer": {
     "projectDesc": "Check out the project at",
@@ -211,7 +216,8 @@
     "following": "Following",
     "loading": "Loading...",
     "noFollowers": "No followers yet.",
-    "showingFirst": "Showing the latest {count} followers."
+    "showingFirst": "Showing the latest {count}.",
+    "noFollowing": "Not following anyone yet."
   },
   "Save": {
     "save": "Save this prompt",
@@ -224,6 +230,7 @@
   "ProfileTabs": {
     "posts": "Posts",
     "followers": "Followers",
-    "saved": "Saved posts"
+    "following": "Following",
+    "saved": "Saved"
   }
 }

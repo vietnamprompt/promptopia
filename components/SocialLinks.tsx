@@ -86,9 +86,10 @@ const BADGES: Record<SocialPlatform, { background: string; content: React.ReactN
 
 interface Props {
 	links?: SocialLinksType;
+	className?: string;
 }
 
-const SocialLinks: React.FC<Props> = ({ links }) => {
+const SocialLinks: React.FC<Props> = ({ links, className = "mt-1" }) => {
 	// Only safe links are shown as links: https links, and an e-mail address.
 	const isSafe = (platform: SocialPlatform) => {
 		const value = links?.[platform];
@@ -107,7 +108,7 @@ const SocialLinks: React.FC<Props> = ({ links }) => {
 	}
 
 	return (
-		<div className="mt-1 flex flex-wrap gap-2">
+		<div className={`flex flex-wrap gap-2 ${className}`}>
 			{items.map((platform) => (
 				<a
 					key={platform}

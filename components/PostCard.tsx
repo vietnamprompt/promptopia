@@ -8,6 +8,7 @@ import Link from "next/link";
 import { PostStatus, PostTypeFromDb } from "@/interfaces/Post";
 import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
 import { Path } from "@/interfaces/Path";
+import { profileHref } from "@/lib/profile-url";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 
 import Btn_PostTag from "./fragments/Btn_PostTag";
@@ -105,7 +106,7 @@ const PostCard: React.FC<PostCardProps> = ({
 		<div className={`${isDelMode ? "post_card_del_mode" : "post_card"}`}>
 			<div className="flex items-start justify-between gap-3">
 				<div className="flex min-w-0 items-start gap-3">
-					<Link href={`${Path.POSTS}?user_id=${post.creator._id}`}>
+					<Link href={profileHref(post.creator)}>
 						<div className="flex justify-center items-center w-14 h-14 cursor-pointer rounded-full z-10 bg-white min-w-[3.5rem] min-h-[3.5rem] relative">
 							<Image
 								unoptimized
@@ -121,7 +122,7 @@ const PostCard: React.FC<PostCardProps> = ({
 					<div className="flex min-w-0 flex-col items-start justify-center gap-1.5 self-stretch">
 						<Link
 							className="max-w-full"
-							href={`${Path.POSTS}?user_id=${post.creator._id}`}
+							href={profileHref(post.creator)}
 						>
 							<h2 className="font-satoshi font-semibold text-mlt-dark-2 text-ellipsis overflow-hidden whitespace-nowrap">
 								@{post?.creator?.username ?? t("defaultUsername")}
@@ -188,8 +189,34 @@ const PostCard: React.FC<PostCardProps> = ({
 			)}
 
 			<div
-				className={`post_card_prompt ${post?.image ? "-mt-6 post_card_prompt_wit_image" : "mt-6"}`}
+				className={`post_card_prompt !pl-5 !pt-5 ${
+					post?.image ? "-mt-6 post_card_prompt_wit_image" : "mt-6"
+				}`}
 			>
+				{/* The copy button sits on the rounded corner of the prompt, its effect is easy to see. */}
+				<IconEmbedSvgPop
+					bgColor={isEditMode || isDelMode ? "bg-mlt-purple-secondary" : "bg-mlt-orange-secondary"}
+					c1={isEditMode || isDelMode ? "mlt-purple-secondary" : "mlt-orange-secondary"}
+					c2={isEditMode || isDelMode ? "mlt-purple-primary" : "mlt-orange-dark"}
+					height={20}
+					isActive={copied === post.prompt}
+					op1="84"
+					style={{
+						position: "absolute",
+						left: "-12px",
+						top: "-12px",
+						width: "36px",
+						height: "36px",
+						background: "#ffffff",
+						boxShadow: "0 1px 5px rgba(0, 0, 0, 0.22)",
+						zIndex: 3,
+					}}
+					text={t("altCopyPrompt")}
+					type={copied === post.prompt ? "clipboard-check" : "clipboard"}
+					width={20}
+					onClick={handlePromptCopy}
+				/>
+
 				<p
 					className="post_card_prompt_text max-h-[146px] whitespace-pre-wrap break-words"
 					onClick={handlePromptCopy}
@@ -226,22 +253,6 @@ const PostCard: React.FC<PostCardProps> = ({
 						/>
 					</a>
 				)}
-			</div>
-
-			{/* The copy button is under the prompt, so the person sees its effect when it is clicked. */}
-			<div className="-mt-3 mb-2 flex justify-end">
-				<IconEmbedSvgPop
-					bgColor={isEditMode || isDelMode ? "bg-mlt-purple-secondary" : "bg-mlt-orange-secondary"}
-					c1={isEditMode || isDelMode ? "mlt-purple-secondary" : "mlt-orange-secondary"}
-					c2={isEditMode || isDelMode ? "mlt-purple-primary" : "mlt-orange-dark"}
-					height={22}
-					isActive={copied === post.prompt}
-					op1="84"
-					text={t("altCopyPrompt")}
-					type={copied === post.prompt ? "clipboard-check" : "clipboard"}
-					width={22}
-					onClick={handlePromptCopy}
-				/>
 			</div>
 
 			<SharePlatformButtons platforms={post.sharePlatforms} prompt={post.prompt} />

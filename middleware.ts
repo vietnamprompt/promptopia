@@ -7,9 +7,9 @@
 import { NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import createIntlMiddleware from "next-intl/middleware";
 import { NextMiddlewareResult } from "next/dist/server/web/types";
-import { NextFetchEvent, NextRequest } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
-const locales = ["en"]; // ["en", "bg"];
+const locales = ["en", "vi"];
 const publicPages = [
 	"/",
 	"/login",
@@ -47,7 +47,36 @@ const authMiddleware = withAuth(
 	}
 ) as AuthMiddleware;
 
+// The public profile "/@username" (served by "app/u/[handle]", see "rewrites" in 'next.config.js').
+const PROFILE_PATH = /^\/@[^/]+\/?$/;
+// The same profile with the language in the address: "/vi/@username" -> "/@username".
+const PROFILE_PATH_WITH_LOCALE = new RegExp(`^/(${locales.join("|")})/(@[^/]+)/?$`);
+
 export default function middleware(req: NextRequest) {
+	const { pathname } = req.nextUrl;
+
+	if (PROFILE_PATH.test(pathname) || pathname.startsWith("/u/")) {
+		return NextResponse.next();
+	}
+
+	const withLocale = PROFILE_PATH_WITH_LOCALE.exec(pathname);
+
+	if (withLocale) {
+		const url = req.nextUrl.clone();
+
+		url.pathname = `/${withLocale[2]}`;
+
+		const response = NextResponse.redirect(url);
+
+		response.cookies.set("NEXT_LOCALE", withLocale[1], {
+			path: "/",
+			maxAge: 365 * 24 * 60 * 60,
+			sameSite: "lax",
+		});
+
+		return response;
+	}
+
 	const publicPathnameRegex = RegExp(
 		`^(/(${locales.join("|")}))?(${publicPages.join("|")})?/?$`,
 		"i"

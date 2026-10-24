@@ -12,6 +12,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { Path } from "@/interfaces/Path";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 
+import LanguageSwitcher from "./LanguageSwitcher";
 import IconImageBased from "./fragments/IconImageBased";
 import { Skeleton } from "./ui/skeleton";
 
@@ -119,6 +120,8 @@ const Nav: React.FC = () => {
 
 			<div className="sm:flex hidden">
 				<div className="flex justify-center items-center gap-3 md:gap-3">
+					<LanguageSwitcher />
+
 					{session?.user ? (
 						<>
 							<Link className="_btn gray_invert " href={Path.POST_CREATE}>
@@ -147,7 +150,9 @@ const Nav: React.FC = () => {
 				</div>
 			</div>
 
-			<div className="sm:hidden flex relative">
+			<div className="sm:hidden flex relative items-center gap-3">
+				<LanguageSwitcher />
+
 				{session?.user ? (
 					<div className="flex">
 						{profilePicture}

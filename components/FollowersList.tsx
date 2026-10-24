@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
-import { Path } from "@/interfaces/Path";
+import { profileHref } from "@/lib/profile-url";
 
 import FollowButton from "./fragments/FollowButton";
 
@@ -19,9 +19,10 @@ interface FollowerUser {
 
 interface Props {
 	userId: string;
+	type: "followers" | "following"; // who follows the user, or who the user follows
 }
 
-const FollowersList: React.FC<Props> = ({ userId }) => {
+const FollowersList: React.FC<Props> = ({ userId, type }) => {
 	const t = useTranslations("Follow");
 	const [users, setUsers] = useState<FollowerUser[]>([]);
 	const [total, setTotal] = useState(0);
@@ -32,7 +33,7 @@ const FollowersList: React.FC<Props> = ({ userId }) => {
 
 		(async () => {
 			try {
-				const response = await fetch(`/api/users/${userId}/followers`);
+				const response = await fetch(`/api/users/${userId}/${type}`);
 				const data = await response.json();
 
 				if (active) {
@@ -51,14 +52,14 @@ const FollowersList: React.FC<Props> = ({ userId }) => {
 		return () => {
 			active = false;
 		};
-	}, [userId]);
+	}, [userId, type]);
 
 	if (loading) {
 		return <p className="mt-6 text-sm text-mlt-dark-6">{t("loading")}</p>;
 	}
 
 	if (users.length === 0) {
-		return <p className="mt-6 text-sm text-mlt-dark-6">{t("noFollowers")}</p>;
+		return <p className="mt-6 text-sm text-mlt-dark-6">{type === "following" ? t("noFollowing") : t("noFollowers")}</p>;
 	}
 
 	return (
@@ -68,7 +69,7 @@ const FollowersList: React.FC<Props> = ({ userId }) => {
 					<li key={user._id} className="flex items-center justify-between gap-3">
 						<Link
 							className="flex min-w-0 items-center gap-3"
-							href={`${Path.POSTS}?user_id=${user._id}`}
+							href={profileHref(user)}
 						>
 							<Image
 								unoptimized

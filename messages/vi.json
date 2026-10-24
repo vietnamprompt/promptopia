@@ -1,0 +1,236 @@
+{
+  "Site": {
+    "title": "Việt Nam Prompt AI",
+    "description": "Kho prompt tiếng Việt dành cho bạn"
+  },
+  "Common": {
+    "model": "Mô hình",
+    "defaultUserDescription": "Thành viên Promptopia",
+    "aiCats": {
+      "chat": "Chat",
+      "image": "Hình ảnh"
+    },
+    "searchTypes": {
+      "prompt": "Prompt",
+      "tags": "Thẻ",
+      "author": "Tác giả"
+    }
+  },
+  "Nav": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "signUp": "Đăng ký",
+    "signIn": "Đăng nhập",
+    "signInWith": "Đăng nhập bằng {provider}",
+    "signOut": "Đăng xuất",
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tìm theo thẻ hoặc tên người dùng",
+    "createPrompt": "Thêm prompt",
+    "logoSubText": {
+      "str0": "romptopia",
+      "str1": "m",
+      "str2": "l",
+      "str3": "t"
+    },
+    "altLogo": "Logo Promptopia.MLT",
+    "altUserProfile": "Hồ sơ người dùng",
+    "myProfile": "Hồ sơ của tôi",
+    "admin": "Quản trị",
+    "languageEn": "English",
+    "languageVi": "Tiếng Việt"
+  },
+  "Home": {
+    "headingLn1": "Khám phá & Chia sẻ",
+    "headingLn2": "Prompt AI Sáng tạo",
+    "subHeading": "Kho prompt AI mã nguồn mở để bạn khám phá, tạo và chia sẻ những prompt sáng tạo",
+    "inputPlaceholder": "Tìm theo thẻ hoặc tên người dùng"
+  },
+  "Form": {
+    "postType": "{ type } bài viết",
+    "postTypeDesc": "{ type } và chia sẻ những prompt tuyệt vời với mọi người, để trí tưởng tượng của bạn bay xa trên mọi nền tảng AI.",
+    "yourPrompt": "Prompt của bạn",
+    "yourPromptPlaceholder": "Viết prompt của bạn vào đây",
+    "tags": "#Thẻ",
+    "tagPlaceholder": "Tối đa 5 thẻ, cách nhau bằng dấu phẩy",
+    "tagSuggestions": "Gợi ý:",
+    "tagPopular": "Thẻ phổ biến:",
+    "linkLabel": "Liên kết tới nền tảng AI",
+    "srcLabel": "Nguồn của prompt",
+    "linkPlaceholder": "https://chat.openai.com/share/...",
+    "linkDesc": "Liên kết tới nền tảng AI bạn đã dùng để tạo prompt",
+    "imageLabel": "Tải lên hình ảnh do AI tạo",
+    "imagePlaceholder": "Tệp từ máy tính của bạn",
+    "imageDesc": "Tải lên hình ảnh do nền tảng AI tạo ra từ prompt này",
+    "imageNoFile": "Chưa chọn tệp",
+    "title": "Tiêu đề",
+    "titlePlaceholder": "Prompt này dùng để làm gì?",
+    "description": "Mô tả (không bắt buộc)",
+    "descriptionPlaceholder": "Giải thích tiêu đề chi tiết hơn",
+    "sharePlatforms": "Nút \"Mở trong\"",
+    "sharePlatformsDesc": "Chọn các nền tảng AI sẽ có nút \"Mở trong ...\" trên bài viết của bạn.",
+    "cancel": "Hủy",
+    "submit": "{ type } bài viết",
+    "processing": "Đang xử lý...",
+    "Types": {
+      "create": "Tạo",
+      "update": "Cập nhật",
+      "delete": "Xóa",
+      "edit": "Sửa"
+    }
+  },
+  "Feed": {
+    "searchForPlaceholder": "Tìm prompt, #thẻ hoặc @tác giả",
+    "empty": "Chưa có prompt nào được đăng.",
+    "searchFor": {
+      "prompt": "Prompt",
+      "tag": "Thẻ",
+      "user": "Người dùng"
+    },
+    "tabs": {
+      "newest": "Mới nhất",
+      "trending": "Thịnh hành",
+      "top": "Nhiều nhất",
+      "saved": "Lưu nhiều nhất",
+      "following": "Đang theo dõi"
+    },
+    "loadMore": "Xem thêm",
+    "loadingMore": "Đang tải...",
+    "noResults": "Không tìm thấy gì. Hãy thử từ khóa khác.",
+    "emptyFollowing": "Chưa có prompt nào. Hãy theo dõi một vài tác giả, prompt mới của họ sẽ hiện ở đây.",
+    "emptySaved": "Chưa có prompt nào được lưu.",
+    "loginForFollowing": "Đăng nhập để xem prompt của những tác giả bạn theo dõi.",
+    "error": "Không tải được prompt. Vui lòng thử lại.",
+    "suggest": {
+      "prompt": "Tìm trong prompt",
+      "tag": "Tìm theo thẻ",
+      "author": "Tìm theo tác giả"
+    },
+    "tabHints": {
+      "newest": "Prompt mới nhất lên đầu",
+      "trending": "Prompt được copy nhiều nhất trong tuần",
+      "top": "Prompt được copy nhiều nhất mọi thời gian",
+      "saved": "Prompt được lưu nhiều nhất mọi thời gian",
+      "following": "Prompt mới của những tác giả bạn theo dõi"
+    },
+    "emptyCopied": "Chưa có prompt nào được copy."
+  },
+  "PostCard": {
+    "altProfilePicture": "Ảnh đại diện của tác giả prompt",
+    "altCopyPrompt": "Sao chép prompt",
+    "altPromptImage": "Hình ảnh của prompt",
+    "defaultUsername": "Promptopia Metalevel.tech",
+    "defaultEmail": "promptopia@metalevel.tech",
+    "spamProtect": "@spam.protect",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "linkAreaLabel": "Liên kết tới nền tảng AI hoặc nguồn của prompt",
+    "openIn": "Mở trong:",
+    "shareCopied": "Đã sao chép prompt. Nếu khung chat đang trống, hãy dán bằng Ctrl+V.",
+    "shareCopiedPaste": "Đã sao chép prompt. {platform} không nhận prompt qua liên kết, hãy dán vào khung chat bằng Ctrl+V.",
+    "status": {
+      "pending": "Đang chờ duyệt - chưa hiện trên trang chủ",
+      "approved": "Đã đăng",
+      "rejected": "Bị từ chối - không hiện trên trang chủ"
+    },
+    "copyCount": "Đã được copy {count} lần"
+  },
+  "CreatePost": {
+    "imageSizeError": "Hình ảnh quá lớn. Dung lượng tối đa là 128KB.",
+    "imageRequiredError": "Loại bài viết này bắt buộc phải có hình ảnh!"
+  },
+  "DeletePost": {
+    "title": "Xóa bài viết id:{ id }",
+    "description": "Hành động này không thể hoàn tác. Bạn có chắc muốn xóa bài viết này không?"
+  },
+  "Profile": {
+    "description": "Chào mừng bạn đến trang hồ sơ. Tại đây bạn có thể xem, sửa hoặc xóa tất cả bài viết của mình.",
+    "accountRemoveDisclaimer": "Nếu bạn muốn xóa tài khoản, vui lòng liên hệ { email } và chúng tôi sẽ xóa giúp bạn.",
+    "placeholderUser": "Người dùng...",
+    "placeholderUserDescription": "Giới thiệu người dùng...",
+    "moderationNote": "Prompt mới và prompt đã sửa sẽ hiện trên trang chủ sau khi được quản trị viên duyệt.",
+    "settingsTitle": "Cài đặt tài khoản",
+    "altAvatar": "Ảnh đại diện",
+    "changeAvatar": "Đổi ảnh đại diện",
+    "avatarHint": "Ảnh được tự động cắt vuông và thu nhỏ.",
+    "name": "Tên hiển thị",
+    "namePlaceholder": "Tên của bạn",
+    "username": "Tên người dùng",
+    "usernameHint": "Dùng {min}-{max} chữ thường, chữ số, dấu chấm hoặc gạch dưới. Địa chỉ hồ sơ của bạn là /@tên-người-dùng. Nếu đổi tên người dùng, địa chỉ cũ sẽ không còn dùng được.",
+    "usernamePlaceholder": "ten.nguoi.dung",
+    "usernameNotChosen": "Bạn chưa chọn tên người dùng, mọi người đang thấy một tên tự động.",
+    "saveUsername": "Lưu tên người dùng",
+    "links": "Liên kết",
+    "linksHint": "Mỗi ô đã có sẵn tên miền, bạn chỉ cần thêm tên của mình vào sau. Để trống ô (hoặc chỉ còn tên miền) để xóa liên kết. Email bạn thêm ở đây sẽ hiện dưới dạng biểu tượng trên hồ sơ công khai.",
+    "email": "Email",
+    "showEmail": "Hiện email của tôi trên hồ sơ công khai",
+    "emailHiddenNote": "Khi tắt, không ai khác thấy email của bạn.",
+    "save": "Lưu",
+    "saving": "Đang lưu...",
+    "saved": "Đã lưu. Trang sẽ tải lại.",
+    "errors": {
+      "generic": "Đã có lỗi xảy ra, vui lòng thử lại.",
+      "nameRequired": "Vui lòng nhập tên.",
+      "nameTooLong": "Tên quá dài.",
+      "usernameLength": "Tên người dùng phải có từ 4 đến 30 ký tự.",
+      "usernameChars": "Chỉ dùng chữ thường, chữ số, dấu chấm và gạch dưới.",
+      "usernameEdges": "Tên người dùng không được bắt đầu hoặc kết thúc bằng dấu chấm hay gạch dưới, và không được có hai ký tự đó liền nhau.",
+      "usernameReserved": "Tên này đã được giữ riêng, hãy chọn tên khác.",
+      "usernameTaken": "Tên người dùng này đã có người dùng.",
+      "socialLinkInvalid": "Liên kết {platform} không hợp lệ. Hãy dùng liên kết đầy đủ, ví dụ {example}",
+      "avatarType": "Hãy chọn ảnh JPG, PNG hoặc WebP.",
+      "avatarSize": "Ảnh quá lớn.",
+      "emailInvalid": "Email không hợp lệ."
+    },
+    "savedPosts": "Bài đã lưu",
+    "savedPublic": "Hiện các bài đã lưu trên hồ sơ công khai",
+    "savedPublicNote": "Khi tắt, chỉ mình bạn thấy các bài đã lưu.",
+    "notFound": "Người dùng này không tồn tại.",
+    "backHome": "Về trang chủ",
+    "loading": "Đang tải..."
+  },
+  "Footer": {
+    "projectDesc": "Xem dự án tại",
+    "projectDescShort": "Xem dự án tại",
+    "projectLink": "Liên kết tới kho mã nguồn của dự án"
+  },
+  "Admin": {
+    "title": "Kiểm duyệt",
+    "description": "Duyệt hoặc từ chối các prompt mới và prompt đã sửa. Chỉ prompt đã duyệt mới hiện trên trang chủ.",
+    "tabs": {
+      "pending": "Chờ duyệt",
+      "rejected": "Đã từ chối",
+      "approved": "Đã duyệt"
+    },
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "loading": "Đang tải...",
+    "empty": "Danh sách này chưa có prompt nào.",
+    "noAccess": "Bạn không có quyền truy cập trang này.",
+    "error": "Đã có lỗi xảy ra, vui lòng thử lại.",
+    "changed": "Prompt vừa được chỉnh sửa, danh sách đã được tải lại. Vui lòng xem lại."
+  },
+  "Follow": {
+    "follow": "Theo dõi",
+    "following": "Đang theo dõi",
+    "loading": "Đang tải...",
+    "noFollowers": "Chưa có người theo dõi.",
+    "noFollowing": "Chưa theo dõi ai.",
+    "showingFirst": "Hiển thị {count} người gần đây nhất."
+  },
+  "Save": {
+    "save": "Lưu prompt này",
+    "unsave": "Bỏ lưu",
+    "loading": "Đang tải...",
+    "empty": "Chưa có bài nào được lưu.",
+    "privateNote": "Chỉ mình bạn thấy các bài đã lưu. Bạn có thể công khai chúng trong phần cài đặt tài khoản.",
+    "private": "Người dùng này giữ các bài đã lưu ở chế độ riêng tư."
+  },
+  "ProfileTabs": {
+    "posts": "Bài viết",
+    "followers": "Người theo dõi",
+    "following": "Đang theo dõi",
+    "saved": "Đã lưu"
+  }
+}

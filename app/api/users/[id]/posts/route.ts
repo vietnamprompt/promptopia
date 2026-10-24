@@ -40,7 +40,7 @@ export async function GET(request: NextRequest, { params }: Context) {
 			? { creator: userId }
 			: { creator: userId, status: PostStatus.APPROVED };
 
-		const posts = await Post.find(filter).populate(POST_POPULATE);
+		const posts = await Post.find(filter).sort({ _id: -1 }).populate(POST_POPULATE);
 
 		return NextResponse.json(
 			{ posts: await addSavedCounts(posts.map(toPublicPost)) },

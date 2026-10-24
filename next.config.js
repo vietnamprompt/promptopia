@@ -63,6 +63,12 @@ const nextConfig = {
 		];
 	},
    */
+	async rewrites() {
+		return [
+			// The public profile: "/@username" is served by "app/u/[handle]".
+			{ source: "/@:username", destination: "/u/:username" },
+		];
+	},
 	async headers() {
 		return [
 			{

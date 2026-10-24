@@ -42,18 +42,20 @@ const UserPosts: React.FC<UserProfileType> = ({ user, posts }) => {
 						width={64}
 					/>
 
-					<div className="flex flex-col gap-1">
+					<div className="flex flex-col gap-2">
 						<p className="font-semibold text-mlt-dark-2">@{user?.username}</p>
-						<SocialLinks links={user?.socialLinks} />
-					</div>
 
-					<FollowButton userId={user._id} />
+						{/* The follow button is before the icons of the links. */}
+						<div className="flex flex-wrap items-center gap-2">
+							<FollowButton userId={user._id} />
+							<SocialLinks className="" links={user?.socialLinks} />
+						</div>
+					</div>
 				</div>
 			)}
 
 			{user?._id && (
 				<ProfileTabs
-					followersCount={user.followersCount}
 					isOwner={isOwner}
 					postsContent={<PostCardList data={posts} />}
 					showSaved={isOwner || !!user.savedPublic}
