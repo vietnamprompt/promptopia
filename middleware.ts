@@ -47,7 +47,8 @@ const authMiddleware = withAuth(
 	}
 ) as AuthMiddleware;
 
-// The public profile "/@username" (served by "app/u/[handle]", see "rewrites" in 'next.config.js').
+// The public profile "/@username" is served by "app/[locale]/u/[handle]". The middleware rewrites
+// the address to "/{locale}/u/{username}" (the browser keeps showing "/@username").
 const PROFILE_PATH = /^\/@[^/]+\/?$/;
 // The same profile with the language in the address: "/vi/@username" -> "/@username".
 const PROFILE_PATH_WITH_LOCALE = new RegExp(`^/(${locales.join("|")})/(@[^/]+)/?$`);
@@ -55,8 +56,22 @@ const PROFILE_PATH_WITH_LOCALE = new RegExp(`^/(${locales.join("|")})/(@[^/]+)/?
 export default function middleware(req: NextRequest) {
 	const { pathname } = req.nextUrl;
 
-	if (PROFILE_PATH.test(pathname) || pathname.startsWith("/u/")) {
-		return NextResponse.next();
+	if (PROFILE_PATH.test(pathname)) {
+		const fromCookie = req.cookies.get("NEXT_LOCALE")?.value;
+		const browser = (req.headers.get("accept-language") ?? "").toLowerCase();
+		const locale =
+			fromCookie && locales.includes(fromCookie) ? fromCookie : browser.startsWith("vi") ? "vi" : "en";
+
+		const url = req.nextUrl.clone();
+
+		url.pathname = `/${locale}/u/${pathname.slice(2).replace(/\/$/, "")}`;
+
+		// next-intl reads the language of the request from this header.
+		const headers = new Headers(req.headers);
+
+		headers.set("X-NEXT-INTL-LOCALE", locale);
+
+		return NextResponse.rewrite(url, { request: { headers } });
 	}
 
 	const withLocale = PROFILE_PATH_WITH_LOCALE.exec(pathname);
