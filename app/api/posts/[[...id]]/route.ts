@@ -1,69 +1,108 @@
 /**
- * @see https://nextjs.org/docs/app/api-reference
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/route
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
  * @see Ref: https://youtu.be/wm5gMKuwSYk?t=7699
  *
- * @note The PATCH and DELETE functions are created bt the help of the
- * 			 VSC extension Bito GPT-4 AI. To check how this is implemented
- *       in the original guide you can @see https://youtu.be/wm5gMKuwSYk?t=10336
- *
- * Spas Z. Spasov REST API Implementation notes:
- * A route file (only for app/ router) allows you
- * to create custom request handlers for a given route.
- *
- * export async function GET(request: Request) {}     // GET:  Retrieve a resource(s)
- * export async function HEAD(request: Request) {}    // HEAD: Retrieve resource metadata
- * export async function POST(request: Request) {}    // POST: Create a new resource
- * export async function PUT(request: Request) {}     // PUT:  Update a resource
- * export async function PATCH(request: Request) {}   // PATCH: Partially update a resource
- * export async function DELETE(request: Request) {}  // DELETE: Delete a resource
- * export async function OPTIONS(request: Request) {} // OPTIONS: Retrieve resource options
- *
- * If `OPTIONS` is not defined, Next.js will automatically
- * implement `OPTIONS` and  set the appropriate Response
- * `Allow` header depending on the other methods defined
- * in the route handler.
+ * Moderation rules implemented in this file:
+ * - GET (list) returns only the posts with status "approved".
+ * - GET (single post) returns a not approved post only to its creator and to the admins.
+ * - POST always creates a "pending" post, the creator is always the logged in user.
+ * - PUT/PATCH are allowed only for the creator, the edited post becomes "pending" again.
+ * - DELETE is allowed for the creator and for the admins.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import mongoose from "mongoose";
 
 import { authOptions } from "@/lib/auth-options";
+import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
+import { PostStatus } from "@/interfaces/Post";
 import Post from "@/models/post";
 
+export const dynamic = "force-dynamic";
+
 interface Context {
-	params: { id: string[] };
+	params: { id?: string[] };
 }
 
-function paramsToObject(params: Context["params"]) {
-	return Object.keys(params).length > 0 ? { _id: params?.id[0] } : {};
+function getPostId(params: Context["params"]) {
+	return params?.id?.[0];
+}
+
+async function getUserInfo() {
+	const session = await getServerSession(authOptions);
+
+	return {
+		userId: session?.user?.id,
+		isAdmin: isAdminEmail(session?.user?.email),
+	};
 }
 
 export async function GET(request: NextRequest, { params }: Context) {
 	try {
 		await connectToMongoDb();
-		const posts = await Post.find(paramsToObject(params)).populate(["creator", "image"]);
 
-		return NextResponse.json({ posts }, { status: 200 });
+		const postId = getPostId(params);
+
+		// The list of posts: only the approved posts are public.
+		if (!postId) {
+			const posts = await Post.find({ status: PostStatus.APPROVED }).populate([
+				"creator",
+				"image",
+			]);
+
+			return NextResponse.json({ posts }, { status: 200 });
+		}
+
+		if (!mongoose.isValidObjectId(postId)) {
+			return NextResponse.json({ posts: [] }, { status: 200 });
+		}
+
+		const post = await Post.findOne({ _id: postId }).populate(["creator", "image"]);
+
+		if (!post) {
+			return NextResponse.json({ posts: [] }, { status: 200 });
+		}
+
+		// A single post that is not approved is visible only for its creator and for the admins.
+		if (post.status !== PostStatus.APPROVED) {
+			const { userId, isAdmin } = await getUserInfo();
+			const creatorId = String(post.creator?._id ?? post.creator);
+
+			if (!isAdmin && creatorId !== userId) {
+				return NextResponse.json({ posts: [] }, { status: 200 });
+			}
+		}
+
+		return NextResponse.json({ posts: [post] }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to retrieve posts!" }, { status: 500 });
 	}
 }
 
 export async function POST(request: NextRequest) {
-	const session = await getServerSession(authOptions);
+	const { userId } = await getUserInfo();
 
-	if (!session) {
+	if (!userId) {
 		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
 	}
 
 	try {
-		const { creator, prompt, tags, aiCategory, link, image } = await request.json();
+		const { prompt, tags, aiCategory, link, image } = await request.json();
 
 		await connectToMongoDb();
-		const newPost = new Post({ creator, prompt, tags, aiCategory, link, image });
+
+		// The creator and the status are never taken from the request body.
+		const newPost = new Post({
+			creator: userId,
+			prompt,
+			tags,
+			aiCategory,
+			link,
+			image,
+			status: PostStatus.PENDING,
+		});
 
 		await newPost.save();
 		await newPost.populate(["creator", "image"]);
@@ -73,88 +112,88 @@ export async function POST(request: NextRequest) {
 			{ status: 201 }
 		);
 	} catch (error) {
-		return NextResponse.json(error, { status: 500 }); // return new Response(JSON.stringify(error), { status: 500 });
+		return NextResponse.json(error, { status: 500 });
 	}
 }
 
-export async function PUT(request: NextRequest, { params }: Context) {
-	const session = await getServerSession(authOptions);
+async function updatePost(request: NextRequest, { params }: Context) {
+	const { userId } = await getUserInfo();
 
-	if (!session) {
+	if (!userId) {
 		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
 	}
 
+	const postId = getPostId(params);
+
+	if (!postId || !mongoose.isValidObjectId(postId)) {
+		return NextResponse.json({ error: "Post not found!" }, { status: 404 });
+	}
+
 	try {
-		const { creator, prompt, tags, aiCategory, link, image } = await request.json();
+		const { prompt, tags, aiCategory, link, image } = await request.json();
 
 		await connectToMongoDb();
-		const updatedPost = await Post.findOneAndUpdate(
-			paramsToObject(params),
-			{ creator, prompt, tags, aiCategory, link, image },
-			{ new: true }
-		);
 
-		if (!updatedPost) {
+		const post = await Post.findOne({ _id: postId });
+
+		if (!post) {
 			return NextResponse.json({ error: "Post not found!" }, { status: 404 });
 		}
 
-		await updatedPost.populate(["creator", "image"]);
+		// Only the creator can edit the post.
+		if (String(post.creator) !== userId) {
+			return NextResponse.json({ error: "Forbidden!" }, { status: 403 });
+		}
+
+		// Every edited post must be approved again by an admin.
+		post.set({ prompt, tags, aiCategory, link, image, status: PostStatus.PENDING });
+
+		await post.save();
+		await post.populate(["creator", "image"]);
 
 		return NextResponse.json(
-			{ message: "Post updated successfully!", post: updatedPost },
+			{ message: "Post updated successfully!", post },
 			{ status: 200 }
 		);
 	} catch (error) {
+		if (error instanceof mongoose.Error.ValidationError) {
+			return NextResponse.json(error, { status: 400 });
+		}
+
 		return NextResponse.json({ error: "Failed to update post!" }, { status: 500 });
 	}
 }
 
-export async function PATCH(request: NextRequest, { params }: Context) {
-	const session = await getServerSession(authOptions);
-
-	if (!session) {
-		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
-	}
-
-	try {
-		const { creator, prompt, tags, aiCategory, link, image } = await request.json();
-
-		await connectToMongoDb();
-
-		const updatedPost = await Post.findOneAndUpdate(
-			paramsToObject(params),
-			{ creator, prompt, tags, aiCategory, link, image },
-			{ new: true }
-		);
-
-		if (!updatedPost) {
-			return NextResponse.json({ error: "Post not found!" }, { status: 404 });
-		}
-
-		return NextResponse.json(
-			{ message: "Post updated successfully!", post: updatedPost },
-			{ status: 200 }
-		);
-	} catch (error) {
-		return NextResponse.json({ error: "Failed to update post!" }, { status: 500 });
-	}
-}
+export const PUT = updatePost;
+export const PATCH = updatePost;
 
 export async function DELETE(request: NextRequest, { params }: Context) {
-	const session = await getServerSession(authOptions);
+	const { userId, isAdmin } = await getUserInfo();
 
-	if (!session) {
+	if (!userId) {
 		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
+	}
+
+	const postId = getPostId(params);
+
+	if (!postId || !mongoose.isValidObjectId(postId)) {
+		return NextResponse.json({ error: "Post not found!" }, { status: 404 });
 	}
 
 	try {
 		await connectToMongoDb();
 
-		const deletedPost = await Post.findOneAndDelete(paramsToObject(params));
+		const post = await Post.findOne({ _id: postId });
 
-		if (!deletedPost) {
+		if (!post) {
 			return NextResponse.json({ error: "Post not found!" }, { status: 404 });
 		}
+
+		if (!isAdmin && String(post.creator) !== userId) {
+			return NextResponse.json({ error: "Forbidden!" }, { status: 403 });
+		}
+
+		await Post.deleteOne({ _id: postId });
 
 		return NextResponse.json({ message: "Post deleted successfully!" }, { status: 200 });
 	} catch (error) {

@@ -125,12 +125,10 @@ const UpdatePost_Page: React.FC = () => {
 			});
 
 			if (response.ok) {
-				const updatedPost = (await response.json()).post;
-
-				setPosts(
-					posts.map((post) => (post._id !== postId ? post : updatedPost)) as PostTypeFromDb[]
-				);
-				router.push(Path.HOME);
+				// The edited post is "pending" again, so it must disappear from the homepage
+				// until an admin approves it.
+				setPosts(posts.filter((post) => post._id !== postId));
+				router.push(Path.PROFILE);
 			} else {
 				// The error handling here should be a bit complex in order to apply the translations.
 				// At all it is better to make a complete check on the FE, before fetch the API.

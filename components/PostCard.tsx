@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 import Link from "next/link";
 
-import { PostTypeFromDb } from "@/interfaces/Post";
+import { PostStatus, PostTypeFromDb } from "@/interfaces/Post";
 import logo from "@/public/icons/svg/mlt.promptopia.logo.favicon.svg";
 import { Path } from "@/interfaces/Path";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
@@ -40,6 +40,15 @@ const PostCard: React.FC<PostCardProps> = ({
 	const isDelMode =
 		session?.user?.id === post.creator._id &&
 		pathName.split("/").at(-1) === Path.POST_DELETE.split("/").at(-1);
+
+	// The creator sees the status of his posts on the profile page.
+	// The old posts (without status) are handled as "pending".
+	const status: PostStatus = post.status ?? PostStatus.PENDING;
+	const statusStyles: Record<PostStatus, string> = {
+		[PostStatus.PENDING]: "text-amber-600",
+		[PostStatus.APPROVED]: "text-green-600",
+		[PostStatus.REJECTED]: "text-red-600",
+	};
 
 	const handlePromptCopy = () => {
 		if (setCopied === undefined) {
@@ -146,6 +155,12 @@ const PostCard: React.FC<PostCardProps> = ({
 					</a>
 				)}
 			</div>
+
+			{isEditMode && (
+				<p className={`mb-3 text-sm font-semibold ${statusStyles[status]}`}>
+					{t(`status.${status}`)}
+				</p>
+			)}
 
 			<p className="post_buttons_list">
 				{(post.tags as string[]).map((tag: string, index) => (

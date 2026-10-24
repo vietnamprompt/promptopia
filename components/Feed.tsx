@@ -18,7 +18,7 @@ import IconEmbedSvg from "./fragments/IconEmbedSvg";
 const Feed: React.FC = () => {
 	const t = useTranslations("Feed");
 	const tCommon = useTranslations("Common");
-	const { posts } = usePromptopiaContext();
+	const { posts, postsLoading } = usePromptopiaContext();
 	const [searchText, setSearchText] = useState("");
 	const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout>(null!);
 	const [searchResults, setSearchResults] = useState<PostTypeFromDb[]>([]);
@@ -180,8 +180,10 @@ const Feed: React.FC = () => {
 				</div>
 			</form>
 
-			{posts.length === 0 ? (
+			{postsLoading ? (
 				<PostCardListLoading />
+			) : posts.length === 0 ? (
+				<p className="mt-16 text-lg text-mlt-dark-6">{t("empty")}</p>
 			) : (searchResults.length > 0 && searchResults.length !== posts.length) || searchText ? (
 				<PostCardList data={searchResults} />
 			) : (

@@ -19,6 +19,7 @@ type AuthProvidersType = Record<
 interface PromptopiaContextProps {
 	posts: PostTypeFromDb[];
 	setPosts: React.Dispatch<React.SetStateAction<PostTypeFromDb[]>>;
+	postsLoading: boolean;
 	users: UserTypeFromDb[];
 	setUsers: React.Dispatch<React.SetStateAction<UserTypeFromDb[]>>;
 	authProviders: AuthProvidersType;
@@ -37,6 +38,7 @@ export const PromptopiaContextProvider: React.FC<PromptopiaContextProviderProps>
 	children,
 }) => {
 	const [posts, setPosts] = useState<PostTypeFromDb[]>([]);
+	const [postsLoading, setPostsLoading] = useState(true);
 	const [users, setUsers] = useState<UserTypeFromDb[]>([]);
 	const [authProviders, setAuthProviders] = useState<AuthProvidersType>(null);
 	const [postCardListSize, setPostCardListSize] = useState(0);
@@ -45,7 +47,8 @@ export const PromptopiaContextProvider: React.FC<PromptopiaContextProviderProps>
 	useEffect(() => {
 		(async () => {
 			setAuthProviders(await getProviders());
-			setPosts(await fetchPosts("/api/posts"));
+			setPosts((await fetchPosts("/api/posts")) ?? []);
+			setPostsLoading(false);
 		})();
 	}, []);
 
@@ -54,6 +57,7 @@ export const PromptopiaContextProvider: React.FC<PromptopiaContextProviderProps>
 			value={{
 				posts,
 				setPosts,
+				postsLoading,
 				users,
 				setUsers,
 				authProviders,

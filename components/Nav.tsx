@@ -125,6 +125,12 @@ const Nav: React.FC = () => {
 								{t("createPrompt")}
 							</Link>
 
+							{session.user.isAdmin && (
+								<Link className="_btn orange_invert" href={Path.ADMIN}>
+									{t("admin")}
+								</Link>
+							)}
+
 							<button
 								className="_btn gray_light"
 								type="button"
@@ -161,6 +167,16 @@ const Nav: React.FC = () => {
 								>
 									{t("createPrompt")}
 								</Link>
+
+								{session.user.isAdmin && (
+									<Link
+										className="dropdown_link"
+										href={Path.ADMIN}
+										onClick={() => setToggleDropDown(false)}
+									>
+										{t("admin")}
+									</Link>
+								)}
 
 								<button
 									className="mt-2 w-full _btn gray_heavy_invert "

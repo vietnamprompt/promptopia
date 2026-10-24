@@ -8,25 +8,21 @@ import { UserTypeFromDb } from "@/interfaces/User";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 
 const UserProfile_Page: React.FC = () => {
-	const { posts, session } = usePromptopiaContext();
+	const { session } = usePromptopiaContext();
 	const [userPosts, setUserPosts] = useState<PostTypeFromDb[]>([]);
+	const userId = session?.user?.id;
 
 	useEffect(() => {
-		const findUserPosts =
-			posts &&
-			session &&
-			(posts.filter((post) => post.creator._id === session?.user?.id) as PostTypeFromDb[]);
-
-		if (findUserPosts) {
-			setUserPosts(findUserPosts);
-		} else {
-			// If the users posts are not in the posts array, fetch them...
-			// TODO: ...this looks like a nonsense and likely to be deleted!
-			(async () => {
-				session && setUserPosts(await fetchPosts(`/api/users/${session?.user?.id}/posts`));
-			})();
+		if (!userId) {
+			return;
 		}
-	}, [posts, session]);
+
+		// The homepage keeps only the approved posts, but the profile page must show
+		// all posts of the user (including the pending and the rejected ones).
+		(async () => {
+			setUserPosts((await fetchPosts(`/api/users/${userId}/posts`)) ?? []);
+		})();
+	}, [userId]);
 
 	return (
 		session && <UserProfile posts={userPosts} user={session?.user as unknown as UserTypeFromDb} />

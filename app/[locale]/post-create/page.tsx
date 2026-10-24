@@ -21,7 +21,7 @@ const maxFileSize = Number(process.env.NEXT_PUBLIC_MAX_FILE_SIZE) || 131072;
 const CreatePost_Page: React.FC = () => {
 	const t = useTranslations("CreatePost");
 	const router = useRouter();
-	const { setPosts, session } = usePromptopiaContext();
+	const { session } = usePromptopiaContext();
 	const [submitting, setSubmitting] = useState(false);
 	const [post, setPost] = useState<PostType | PostTypeFromDb>(postInit);
 	const [errors, setErrors] = useState<PostErrorsType>(null!);
@@ -101,10 +101,8 @@ const CreatePost_Page: React.FC = () => {
 			});
 
 			if (response.ok) {
-				const newPost = (await response.json()).post;
-
-				setPosts((prevPosts) => [...prevPosts, newPost]);
-				router.push(Path.HOME);
+				// The new post is "pending", it is not shown on the homepage until an admin approves it.
+				router.push(Path.PROFILE);
 			} else {
 				// The error handling here should be a bit complex in order to apply the translations.
 				// At all it is better to make a complete check on the FE, before fetch the API.

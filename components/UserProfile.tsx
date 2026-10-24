@@ -22,6 +22,8 @@ const UserProfile: React.FC<UserProfileType> = ({ user, posts }) => {
 				titleGradient={user?.name ?? ""}
 			/>
 
+			<p className="max-w-md text-sm text-mlt-dark-6">{t("moderationNote")}</p>
+
 			<PostCardList data={posts} />
 		</section>
 	);
