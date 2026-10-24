@@ -33,6 +33,11 @@ const UserSchema = new Schema({
 		type: Boolean,
 		default: false,
 	},
+	// A blocked user can not sign in and can not post (set by an admin, see 'app/api/admin/users').
+	blocked: {
+		type: Boolean,
+		default: false,
+	},
 	name: {
 		type: String,
 	},

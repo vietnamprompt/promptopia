@@ -6,13 +6,17 @@ import { PostStatus, PostTypeFromDb } from "@/interfaces/Post";
 import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 import Header from "@/components/Header";
 import PostCard from "@/components/PostCard";
+import AdminMembers from "@/components/AdminMembers";
 
 const tabs = [PostStatus.PENDING, PostStatus.REJECTED, PostStatus.APPROVED];
+const MEMBERS = "members";
+
+type AdminTab = PostStatus | typeof MEMBERS;
 
 const Admin_Page: React.FC = () => {
 	const t = useTranslations("Admin");
 	const { session, setPosts } = usePromptopiaContext();
-	const [tab, setTab] = useState<PostStatus>(PostStatus.PENDING);
+	const [tab, setTab] = useState<AdminTab>(PostStatus.PENDING);
 	const [list, setList] = useState<PostTypeFromDb[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [messageKey, setMessageKey] = useState("");
@@ -21,6 +25,10 @@ const Admin_Page: React.FC = () => {
 	const isAdmin = !!session?.user?.isAdmin;
 
 	const loadPosts = useCallback(async () => {
+		if (tab === MEMBERS) {
+			return;
+		}
+
 		setLoading(true);
 
 		try {
@@ -123,11 +131,21 @@ const Admin_Page: React.FC = () => {
 						{t(`tabs.${item}`)}
 					</button>
 				))}
+
+				<button
+					className={`_btn ${tab === MEMBERS ? "orange_invert" : "gray_light"}`}
+					type="button"
+					onClick={() => setTab(MEMBERS)}
+				>
+					{t("tabs.members")}
+				</button>
 			</div>
 
 			{messageKey && <p className="form_error mt-4 text-sm">{t(messageKey)}</p>}
 
-			{loading ? (
+			{tab === MEMBERS ? (
+				<AdminMembers />
+			) : loading ? (
 				<p className="mt-10 text-mlt-dark-6">{t("loading")}</p>
 			) : list.length === 0 ? (
 				<p className="mt-10 text-mlt-dark-6">{t("empty")}</p>

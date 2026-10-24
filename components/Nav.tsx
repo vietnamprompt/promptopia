@@ -109,13 +109,10 @@ const Nav: React.FC = () => {
 					width={40}
 				/>
 				<p className="logo_text relative">
-					<span className="logo_text_str0">{t("logoSubText.str0")}</span>
-					<span className="max-md:block max-md:absolute max-md:right-0 max-md:text-sm max-md:-bottom-4">
-						<span className="logo_text_str1">.{t("logoSubText.str1")}</span>
-						<span className="logo_text_str1">{t("logoSubText.str2")}</span>
-						<span className="logo_text_str3">{t("logoSubText.str3")}</span>
-					</span>
-				</p>
+						<span className="orange_gradient font-inter text-xl font-extrabold tracking-tight">
+							promt84.com
+						</span>
+					</p>
 			</Link>
 
 			<div className="sm:flex hidden">
@@ -128,7 +125,7 @@ const Nav: React.FC = () => {
 								{t("createPrompt")}
 							</Link>
 
-							<Link className="_btn gray_invert " href={Path.PROFILE}>
+							<Link className="_btn gray_invert " href={Path.MY_POSTS}>
 								{t("myPosts")}
 							</Link>
 

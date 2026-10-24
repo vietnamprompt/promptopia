@@ -205,7 +205,8 @@
     "tabs": {
       "pending": "Chờ duyệt",
       "rejected": "Đã từ chối",
-      "approved": "Đã duyệt"
+      "approved": "Đã duyệt",
+      "members": "Thành viên"
     },
     "approve": "Duyệt",
     "reject": "Từ chối",
@@ -213,7 +214,24 @@
     "empty": "Danh sách này chưa có prompt nào.",
     "noAccess": "Bạn không có quyền truy cập trang này.",
     "error": "Đã có lỗi xảy ra, vui lòng thử lại.",
-    "changed": "Prompt vừa được chỉnh sửa, danh sách đã được tải lại. Vui lòng xem lại."
+    "changed": "Prompt vừa được chỉnh sửa, danh sách đã được tải lại. Vui lòng xem lại.",
+    "members": {
+      "search": "Tìm theo tên, username hoặc email",
+      "name": "Thành viên",
+      "username": "Username",
+      "email": "Email",
+      "posts": "Bài viết",
+      "block": "Chặn",
+      "unblock": "Bỏ chặn",
+      "blocked": "Đã chặn",
+      "admin": "Quản trị",
+      "empty": "Không tìm thấy thành viên nào.",
+      "total": "{count} thành viên",
+      "more": "Xem thêm",
+      "confirmBlock": "Chặn thành viên này? Họ sẽ không đăng nhập hoặc đăng bài được nữa.",
+      "confirmUnblock": "Bỏ chặn thành viên này?",
+      "cannot": "Không thể chặn tài khoản này."
+    }
   },
   "Follow": {
     "follow": "Theo dõi",
@@ -236,5 +254,11 @@
     "followers": "Người theo dõi",
     "following": "Đang theo dõi",
     "saved": "Đã lưu"
+  },
+  "MyPosts": {
+    "title": "Prompt đã đăng",
+    "description": "Quản lý các prompt bạn đã đăng: sửa, xóa và xem trạng thái.",
+    "empty": "Bạn chưa đăng prompt nào.",
+    "create": "Thêm prompt"
   }
 }

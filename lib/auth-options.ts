@@ -60,7 +60,8 @@ export const authOptions: NextAuthOptions = {
 			await connectToMongoDb();
 			const sessionUser = await User.findOne({ email: session?.user?.email });
 
-			session.user.id = sessionUser?._id.toString(); // see: @/types/next-auth
+			// A blocked user has no id, so every API treats him as not logged in.
+			session.user.id = sessionUser?.blocked ? undefined : sessionUser?._id.toString(); // see: @/types/next-auth
 			session.user.accountProvider = sessionUser?.accountProvider;
 			session.user.username = sessionUser?.username;
 			// The name and the avatar can be changed by the user on the profile page.
@@ -90,6 +91,11 @@ export const authOptions: NextAuthOptions = {
 				 * .image does not exist on { profile } - i.e. for GitHub 'avatar_url'...
 				 * @see '@/app/components/Nav.tsx' and '@/types/next-auth.d.ts'
 				 */
+
+				// A blocked user can not sign in.
+				if (userExist?.blocked) {
+					return false;
+				}
 
 				// If not create a new user in the database
 				if (!userExist) {

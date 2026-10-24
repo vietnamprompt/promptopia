@@ -38,9 +38,11 @@ const PostCard: React.FC<PostCardProps> = ({
 	const t = useTranslations("PostCard");
 	const pathName = usePathname();
 	const { session } = usePromptopiaContext();
+	const lastSegment = pathName.split("/").at(-1);
+	// The owner can edit and delete the posts on the profile page and on the page "my posts".
 	const isEditMode =
 		session?.user?.id === post.creator._id &&
-		pathName.split("/").at(-1) === Path.PROFILE.split("/").at(-1);
+		(lastSegment === Path.PROFILE.split("/").at(-1) || lastSegment === Path.MY_POSTS.split("/").at(-1));
 	const isDelMode =
 		session?.user?.id === post.creator._id &&
 		pathName.split("/").at(-1) === Path.POST_DELETE.split("/").at(-1);

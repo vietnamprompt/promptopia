@@ -205,7 +205,8 @@
     "tabs": {
       "pending": "Pending",
       "rejected": "Rejected",
-      "approved": "Approved"
+      "approved": "Approved",
+      "members": "Members"
     },
     "approve": "Approve",
     "reject": "Reject",
@@ -213,7 +214,24 @@
     "empty": "There are no prompts in this list.",
     "noAccess": "You do not have access to this page.",
     "error": "Something went wrong, please try again.",
-    "changed": "The prompt was edited in the meantime, the list has been reloaded. Please review it again."
+    "changed": "The prompt was edited in the meantime, the list has been reloaded. Please review it again.",
+    "members": {
+      "search": "Search by name, username or e-mail",
+      "name": "Member",
+      "username": "Username",
+      "email": "E-mail",
+      "posts": "Posts",
+      "block": "Block",
+      "unblock": "Unblock",
+      "blocked": "Blocked",
+      "admin": "Admin",
+      "empty": "No members found.",
+      "total": "{count} members",
+      "more": "Show more",
+      "confirmBlock": "Block this member? They will not be able to sign in or post.",
+      "confirmUnblock": "Unblock this member?",
+      "cannot": "This account can not be blocked."
+    }
   },
   "Follow": {
     "follow": "Follow",
@@ -236,5 +254,11 @@
     "followers": "Followers",
     "following": "Following",
     "saved": "Saved"
+  },
+  "MyPosts": {
+    "title": "My prompts",
+    "description": "Manage the prompts you have posted: edit, delete and see their status.",
+    "empty": "You have not posted any prompt yet.",
+    "create": "Add prompt"
   }
 }
