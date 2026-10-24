@@ -14,6 +14,8 @@ import Btn_PostTag from "./fragments/Btn_PostTag";
 import IconEmbedSvgPop from "./fragments/IconEmbedSvgPop";
 import Btn_PostActions from "./fragments/Btn_PostActions";
 import SharePlatformButtons from "./fragments/SharePlatformButtons";
+import FollowButton from "./fragments/FollowButton";
+import SaveButton from "./fragments/SaveButton";
 
 interface PostCardProps {
 	post: PostTypeFromDb;
@@ -176,6 +178,13 @@ const PostCard: React.FC<PostCardProps> = ({
 				<p className={`mb-3 text-sm font-semibold ${statusStyles[status]}`}>
 					{t(`status.${status}`)}
 				</p>
+			)}
+
+			{!isDelMode && post.status !== PostStatus.PENDING && post.status !== PostStatus.REJECTED && (
+				<div className="mb-3 flex items-center justify-between gap-2">
+					<FollowButton userId={post.creator._id} />
+					<SaveButton count={post.savedCount} postId={post._id} />
+				</div>
 			)}
 
 			<p className="post_buttons_list">

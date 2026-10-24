@@ -10,6 +10,8 @@ export interface UserType {
 	accountProvider?: string; // private, not sent to the visitors
 	description?: string;
 	socialLinks?: SocialLinksType;
+	followersCount?: number;
+	savedPublic?: boolean; // the saved posts are visible on the public profile
 }
 
 export interface UserTypeFromDb extends UserType {

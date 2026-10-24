@@ -5,8 +5,11 @@ import { ObjectId, GridFSFile } from "mongodb";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth-options";
-import { gridFSBucket } from "@/lib/mongodb-mongoose";
+import { isAdminEmail } from "@/lib/admin";
+import { detectImageType, POST_IMAGE_MAX_BYTES } from "@/lib/image-type";
+import { connectToMongoDb, gridFSBucket } from "@/lib/mongodb-mongoose";
 import { GridFS } from "@/models/grid_fs";
+import Post from "@/models/post";
 
 import { Readable } from "stream";
 
@@ -96,8 +99,9 @@ fetch('/api/files/', { method: 'POST', body: formData })
  */
 export async function POST(request: NextRequest) {
 	const session = await getServerSession(authOptions);
+	const userId = session?.user?.id;
 
-	if (!session) {
+	if (!session || !userId) {
 		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
 	}
 
@@ -122,22 +126,32 @@ export async function POST(request: NextRequest) {
 				const blob = value as Blob;
 				const filename = blob.name;
 
-				//convert the blob to stream
+				if (blob.size > POST_IMAGE_MAX_BYTES) {
+					return NextResponse.json({ error: "The image is too big!" }, { status: 413 });
+				}
+
 				const buffer = Buffer.from(await blob.arrayBuffer());
-				const stream = Readable.from(buffer);
+
+				// Only images (JPG, PNG, WebP, GIF), detected by the content of the file.
+				const contentType = detectImageType(buffer);
+
+				if (!contentType) {
+					return NextResponse.json({ error: "Only images are allowed!" }, { status: 415 });
+				}
 
 				const uploadStream = bucket.openUploadStream(filename, {
-					// make sure to add content type so that it will be easier to set later.
-					contentType: blob.type,
-					metadata: {}, // add your metadata here if any
+					contentType,
+					// The owner is checked when the file is deleted.
+					metadata: { owner: userId, kind: "post" },
 				});
 
-				// pipe the readable stream to a writeable stream to save it to the database
-				stream.pipe(uploadStream!);
+				await new Promise<void>((resolve, reject) => {
+					uploadStream.on("finish", () => resolve());
+					uploadStream.on("error", reject);
+					uploadStream.end(buffer);
+				});
 
-				const res = stream.pipe(uploadStream!);
-
-				response.push({ filename, _id: res.id.toString() });
+				response.push({ filename, _id: uploadStream.id.toString() });
 			}
 		}
 
@@ -162,8 +176,9 @@ fetch('/api/files/123', { method: 'DELETE' })
  */
 export async function DELETE(request: NextRequest, { params }: Context) {
 	const session = await getServerSession(authOptions);
+	const userId = session?.user?.id;
 
-	if (!session) {
+	if (!session || !userId) {
 		return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
 	}
 
@@ -171,12 +186,35 @@ export async function DELETE(request: NextRequest, { params }: Context) {
 		const bucket = await gridFSBucket();
 
 		if (params?.query.length === 1) {
+			if (!ObjectId.isValid(params?.query[0])) {
+				return new NextResponse(null, { status: 404, statusText: "Not found" });
+			}
+
 			const fileId = new ObjectId(params?.query[0]);
 
 			const file = await bucket.find({ _id: fileId }).toArray();
 
 			if (file.length === 0) {
 				return new NextResponse(null, { status: 404, statusText: "Not found" });
+			}
+
+			// Only the owner of the file (and the admins) can delete it.
+			// The old files (uploaded before the owner was saved) belong to the creator
+			// of the post that uses them.
+			const owner = file[0]?.metadata?.owner;
+			let allowed = isAdminEmail(session.user?.email);
+
+			if (!allowed && owner) {
+				allowed = String(owner) === userId;
+			}
+
+			if (!allowed && !owner) {
+				await connectToMongoDb();
+				allowed = !!(await Post.exists({ creator: userId, image: fileId }));
+			}
+
+			if (!allowed) {
+				return NextResponse.json({ error: "Forbidden!" }, { status: 403 });
 			}
 
 			await bucket.delete(fileId);

@@ -9,6 +9,7 @@ import { authOptions } from "@/lib/auth-options";
 import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import { addSavedCounts } from "@/lib/engagement";
 import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import Post from "@/models/post";
 
@@ -41,7 +42,10 @@ export async function GET(request: NextRequest, { params }: Context) {
 
 		const posts = await Post.find(filter).populate(POST_POPULATE);
 
-		return NextResponse.json({ posts: posts.map(toPublicPost) }, { status: 200 });
+		return NextResponse.json(
+			{ posts: await addSavedCounts(posts.map(toPublicPost)) },
+			{ status: 200 }
+		);
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to retrieve posts!" }, { status: 500 });
 	}

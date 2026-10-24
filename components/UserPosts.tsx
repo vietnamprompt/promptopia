@@ -8,10 +8,15 @@ import { UserProfileType } from "@/interfaces/Profile";
 
 import Header from "./Header";
 import PostCardList from "./PostCardList";
+import ProfileTabs from "./ProfileTabs";
+import FollowButton from "./fragments/FollowButton";
+import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 import SocialLinks from "./SocialLinks";
 
 const UserPosts: React.FC<UserProfileType> = ({ user, posts }) => {
 	const t = useTranslations("Profile");
+	const { session } = usePromptopiaContext();
+	const isOwner = !!user?._id && session?.user?.id === user._id;
 
 	return (
 		<section className="page_section_left w-full">
@@ -42,10 +47,20 @@ const UserPosts: React.FC<UserProfileType> = ({ user, posts }) => {
 						{user?.email && <p className="text-sm text-mlt-dark-6">{user.email}</p>}
 						<SocialLinks links={user?.socialLinks} />
 					</div>
+
+					<FollowButton userId={user._id} />
 				</div>
 			)}
 
-			<PostCardList data={posts} />
+			{user?._id && (
+				<ProfileTabs
+					followersCount={user.followersCount}
+					isOwner={isOwner}
+					postsContent={<PostCardList data={posts} />}
+					showSaved={isOwner || !!user.savedPublic}
+					userId={user._id}
+				/>
+			)}
 		</section>
 	);
 };

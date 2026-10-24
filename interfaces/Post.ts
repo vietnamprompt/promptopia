@@ -37,6 +37,7 @@ export interface PostTypeFromDb extends Omit<PostType, "tags"> {
 	image: GridFSFile;
 	status?: PostStatus; // missing in the old posts, they are handled as "pending"
 	updatedAt?: string;
+	savedCount?: number; // how many users saved the post
 }
 
 export enum AiCategories {

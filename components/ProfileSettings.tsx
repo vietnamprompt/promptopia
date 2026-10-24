@@ -21,6 +21,7 @@ interface OwnProfile {
 	usernameChosen: boolean;
 	image?: string;
 	showEmail: boolean;
+	savedPublic: boolean;
 	socialLinks?: Record<string, string>;
 }
 
@@ -91,6 +92,7 @@ const ProfileSettings: React.FC = () => {
 	const [profile, setProfile] = useState<OwnProfile | null>(null);
 	const [name, setName] = useState("");
 	const [showEmail, setShowEmail] = useState(false);
+	const [savedPublic, setSavedPublic] = useState(false);
 	const [links, setLinks] = useState<Record<string, string>>({});
 	const [username, setUsername] = useState("");
 	const [busy, setBusy] = useState(false);
@@ -109,6 +111,7 @@ const ProfileSettings: React.FC = () => {
 			setProfile(user);
 			setName(user.name ?? "");
 			setShowEmail(!!user.showEmail);
+			setSavedPublic(!!user.savedPublic);
 			setLinks(user.socialLinks ?? {});
 			setUsername(user.usernameChosen ? user.username : "");
 		} catch (error) {
@@ -183,7 +186,7 @@ const ProfileSettings: React.FC = () => {
 			cleanLinks[platform] = result.value;
 		}
 
-		send({ name: cleanName, showEmail, socialLinks: cleanLinks });
+		send({ name: cleanName, showEmail, savedPublic, socialLinks: cleanLinks });
 	};
 
 	const handleSaveUsername = () => {
@@ -301,6 +304,21 @@ const ProfileSettings: React.FC = () => {
 					{t("showEmail")}
 				</label>
 				<p className="mt-1 text-xs text-mlt-dark-6">{t("emailHiddenNote")}</p>
+			</div>
+
+			<div>
+				<p className="form_input_title">{t("savedPosts")}</p>
+
+				<label className="mt-2 flex cursor-pointer items-center gap-2 text-sm text-mlt-dark-4">
+					<input
+						checked={savedPublic}
+						className="h-4 w-4"
+						type="checkbox"
+						onChange={(e) => setSavedPublic(e.target.checked)}
+					/>
+					{t("savedPublic")}
+				</label>
+				<p className="mt-1 text-xs text-mlt-dark-6">{t("savedPublicNote")}</p>
 			</div>
 
 			<div>

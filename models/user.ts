@@ -28,6 +28,11 @@ const UserSchema = new Schema({
 		type: Boolean,
 		default: false,
 	},
+	// The saved posts are private, unless the user makes them public.
+	savedPublic: {
+		type: Boolean,
+		default: false,
+	},
 	name: {
 		type: String,
 	},

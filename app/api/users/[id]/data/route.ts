@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { getPublicUsername } from "@/lib/public-user";
 import { cleanSocialLinks } from "@/lib/social-links";
+import Follow from "@/models/follow";
 import User from "@/models/user";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,8 @@ export async function GET(request: NextRequest, { params }: Context) {
 			return failed();
 		}
 
+		const followersCount = await Follow.countDocuments({ following: user._id });
+
 		return NextResponse.json(
 			{
 				_id: user._id,
@@ -47,6 +50,9 @@ export async function GET(request: NextRequest, { params }: Context) {
 				description: user.description,
 				email: user.showEmail ? user.email : undefined,
 				socialLinks: cleanSocialLinks(user.socialLinks),
+				followersCount,
+				// The visitors see the "Saved" tab only if the user made his saved posts public.
+				savedPublic: !!user.savedPublic,
 			},
 			{ status: 200 }
 		);

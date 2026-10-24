@@ -2,7 +2,7 @@
  * The profile of the logged in user (only the user himself can read and change it).
  *
  * GET   /api/users/me
- * PATCH /api/users/me   body: { name?, showEmail?, username?, socialLinks? }
+ * PATCH /api/users/me   body: { name?, showEmail?, savedPublic?, username?, socialLinks? }
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -26,6 +26,7 @@ interface UserDoc {
 	usernameChosen?: boolean;
 	image?: string;
 	showEmail?: boolean;
+	savedPublic?: boolean;
 	socialLinks?: unknown;
 }
 
@@ -38,6 +39,7 @@ function toOwnProfile(user: UserDoc) {
 		usernameChosen: !!user.usernameChosen,
 		image: user.image,
 		showEmail: !!user.showEmail,
+		savedPublic: !!user.savedPublic,
 		socialLinks: cleanSocialLinks(user.socialLinks),
 	};
 }
@@ -100,6 +102,10 @@ export async function PATCH(request: NextRequest) {
 
 	if ("showEmail" in body) {
 		user.showEmail = body.showEmail === true;
+	}
+
+	if ("savedPublic" in body) {
+		user.savedPublic = body.savedPublic === true;
 	}
 
 	if ("socialLinks" in body) {

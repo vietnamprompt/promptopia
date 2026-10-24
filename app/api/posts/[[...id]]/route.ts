@@ -20,7 +20,9 @@ import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
 import { POST_POPULATE, toPublicPost } from "@/lib/public-user";
 import { normalizeSharePlatforms } from "@/interfaces/SharePlatform";
+import { addSavedCounts } from "@/lib/engagement";
 import Post from "@/models/post";
+import Save from "@/models/save";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +53,10 @@ export async function GET(request: NextRequest, { params }: Context) {
 		if (!postId) {
 			const posts = await Post.find({ status: PostStatus.APPROVED }).populate(POST_POPULATE);
 
-			return NextResponse.json({ posts: posts.map(toPublicPost) }, { status: 200 });
+			return NextResponse.json(
+				{ posts: await addSavedCounts(posts.map(toPublicPost)) },
+				{ status: 200 }
+			);
 		}
 
 		if (!mongoose.isValidObjectId(postId)) {
@@ -74,7 +79,10 @@ export async function GET(request: NextRequest, { params }: Context) {
 			}
 		}
 
-		return NextResponse.json({ posts: [toPublicPost(post)] }, { status: 200 });
+		return NextResponse.json(
+			{ posts: await addSavedCounts([toPublicPost(post)]) },
+			{ status: 200 }
+		);
 	} catch (error) {
 		return NextResponse.json({ error: "Failed to retrieve posts!" }, { status: 500 });
 	}
@@ -208,6 +216,8 @@ export async function DELETE(request: NextRequest, { params }: Context) {
 		}
 
 		await Post.deleteOne({ _id: postId });
+		// Nobody can keep a deleted post in the saved list.
+		await Save.deleteMany({ post: postId });
 
 		return NextResponse.json({ message: "Post deleted successfully!" }, { status: 200 });
 	} catch (error) {
