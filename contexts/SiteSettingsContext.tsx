@@ -8,12 +8,18 @@ interface SiteContextValue {
 	siteName: string;
 	logoUrl: string | null;
 	footerText: string;
+	heroLine1: string;
+	heroLine2: string;
+	heroDescription: string;
 }
 
 const SiteSettingsContext = createContext<SiteContextValue>({
 	siteName: DEFAULT_SITE_SETTINGS.siteName,
 	logoUrl: null,
 	footerText: DEFAULT_SITE_SETTINGS.footerText,
+	heroLine1: "",
+	heroLine2: "",
+	heroDescription: "",
 });
 
 /** The name, the logo and the footer text of the site. The layout reads them from the database. */

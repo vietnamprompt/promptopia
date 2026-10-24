@@ -68,6 +68,9 @@ export async function PUT(request: NextRequest) {
 		const $set: Record<string, unknown> = {
 			siteName,
 			footerText: text(body.footerText, SETTINGS_LIMITS.footerText),
+			heroLine1: text(body.heroLine1, SETTINGS_LIMITS.heroLine),
+			heroLine2: text(body.heroLine2, SETTINGS_LIMITS.heroLine),
+			heroDescription: text(body.heroDescription, SETTINGS_LIMITS.heroDescription),
 			googleVerification: text(body.googleVerification, SETTINGS_LIMITS.googleVerification),
 			announcementEnabled: body.announcementEnabled === true,
 			announcementText: text(body.announcementText, SETTINGS_LIMITS.announcement),

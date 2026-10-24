@@ -54,6 +54,7 @@ async function resizeLogo(file: File, max = 256): Promise<string> {
  */
 const AdminSettings: React.FC = () => {
 	const t = useTranslations("Admin.settings");
+	const tHome = useTranslations("Home");
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [settings, setSettings] = useState<SiteSettings | null>(null);
 	// undefined = the logo is not changed, null = remove the logo, string = the new logo (data URL)
@@ -282,6 +283,48 @@ const AdminSettings: React.FC = () => {
 				/>
 				<span className="mt-1 block text-xs text-mlt-dark-6">{t("verificationHint")}</span>
 			</label>
+
+			<div>
+				<p className="form_input_title">{t("hero")}</p>
+				<p className="mt-1 text-xs text-mlt-dark-6">{t("heroHint")}</p>
+
+				<label className="mt-3 block" htmlFor="hero-line1">
+					<span className="text-sm text-mlt-dark-4">{t("heroLine1")}</span>
+					<input
+						className="form_input !mt-1"
+						id="hero-line1"
+						maxLength={SETTINGS_LIMITS.heroLine}
+						placeholder={tHome("headingLn1")}
+						value={settings.heroLine1}
+						onChange={(e) => update({ heroLine1: e.target.value })}
+					/>
+				</label>
+
+				<label className="mt-3 block" htmlFor="hero-line2">
+					<span className="text-sm text-mlt-dark-4">{t("heroLine2")}</span>
+					<input
+						className="form_input !mt-1"
+						id="hero-line2"
+						maxLength={SETTINGS_LIMITS.heroLine}
+						placeholder={tHome("headingLn2")}
+						value={settings.heroLine2}
+						onChange={(e) => update({ heroLine2: e.target.value })}
+					/>
+				</label>
+
+				<label className="mt-3 block" htmlFor="hero-description">
+					<span className="text-sm text-mlt-dark-4">{t("heroDescription")}</span>
+					<textarea
+						className="form_input form_textarea !mt-1"
+						id="hero-description"
+						maxLength={SETTINGS_LIMITS.heroDescription}
+						placeholder={tHome("subHeading")}
+						rows={3}
+						value={settings.heroDescription}
+						onChange={(e) => update({ heroDescription: e.target.value })}
+					/>
+				</label>
+			</div>
 
 			<label htmlFor="site-footer">
 				<span className="form_input_title">{t("footer")}</span>

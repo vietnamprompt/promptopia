@@ -271,7 +271,12 @@
       "autoApprove": "Tự động duyệt bài",
       "autoApproveHint": "Thành viên có số bài đã duyệt đạt mức này sẽ được duyệt tự động các bài tiếp theo. 0 = tắt. Admin và thành viên được đánh dấu tin cậy (ở tab Thành viên) luôn được duyệt tự động.",
       "bannedWords": "Danh sách từ cấm",
-      "bannedWordsHint": "Mỗi dòng một từ hoặc cụm từ. Bài viết, tên và phần giới thiệu có chứa từ này sẽ bị từ chối. Không phân biệt hoa thường và dấu, chỉ khớp nguyên từ."
+      "bannedWordsHint": "Mỗi dòng một từ hoặc cụm từ. Bài viết, tên và phần giới thiệu có chứa từ này sẽ bị từ chối. Không phân biệt hoa thường và dấu, chỉ khớp nguyên từ.",
+      "hero": "Tiêu đề trang chủ",
+      "heroHint": "Dòng chữ lớn ở đầu trang chủ (dùng chung cho cả hai ngôn ngữ). Để trống ô nào thì dùng nội dung mặc định.",
+      "heroLine1": "Tiêu đề, dòng 1 (màu đen)",
+      "heroLine2": "Tiêu đề, dòng 2 (màu chuyển sắc)",
+      "heroDescription": "Mô tả bên dưới tiêu đề"
     },
     "stats": {
       "members": "Thành viên",

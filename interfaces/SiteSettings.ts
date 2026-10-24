@@ -14,6 +14,10 @@ export interface SeoText {
 export interface SiteSettings {
 	siteName: string;
 	footerText: string;
+	// The big text of the homepage (both languages). Empty = the default text of 'messages/*.json'.
+	heroLine1: string;
+	heroLine2: string;
+	heroDescription: string;
 	googleVerification: string;
 	announcementEnabled: boolean;
 	announcementText: string;
@@ -28,6 +32,8 @@ export interface SiteSettings {
 export const SETTINGS_LIMITS = {
 	siteName: 60,
 	footerText: 120,
+	heroLine: 60,
+	heroDescription: 300,
 	googleVerification: 120,
 	announcement: 200,
 	bannedWords: 3000,
@@ -41,6 +47,9 @@ export const SETTINGS_LIMITS = {
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
 	siteName: "promt84.com",
 	footerText: "©2026",
+	heroLine1: "",
+	heroLine2: "",
+	heroDescription: "",
 	googleVerification: "",
 	announcementEnabled: false,
 	announcementText: "",
@@ -56,6 +65,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
 interface StoredSettings {
 	siteName?: string;
 	footerText?: string;
+	heroLine1?: string;
+	heroLine2?: string;
+	heroDescription?: string;
 	googleVerification?: string;
 	announcementEnabled?: boolean;
 	announcementText?: string;
@@ -77,6 +89,9 @@ export function normalizeSettings(doc?: StoredSettings | null): SiteSettings {
 	return {
 		siteName: doc?.siteName?.trim() || d.siteName,
 		footerText: doc?.footerText ?? d.footerText,
+		heroLine1: doc?.heroLine1 ?? "",
+		heroLine2: doc?.heroLine2 ?? "",
+		heroDescription: doc?.heroDescription ?? "",
 		googleVerification: doc?.googleVerification ?? "",
 		announcementEnabled: !!doc?.announcementEnabled,
 		announcementText: doc?.announcementText ?? "",

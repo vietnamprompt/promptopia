@@ -35,8 +35,10 @@ export async function generateMetadata({
 	const messages = (await import(`@/messages/${locale}.json`)).default;
 	const seo = settings.seo[locale];
 
-	const title = seo.title || `${settings.siteName} - ${messages.Home.headingLn1} ${messages.Home.headingLn2}`;
-	const description = seo.description || messages.Home.subHeading;
+	const heroLine1 = settings.heroLine1 || messages.Home.headingLn1;
+	const heroLine2 = settings.heroLine2 || messages.Home.headingLn2;
+	const title = seo.title || `${settings.siteName} - ${heroLine1} ${heroLine2}`;
+	const description = seo.description || settings.heroDescription || messages.Home.subHeading;
 
 	return {
 		metadataBase: getMetadataBase(),
@@ -94,6 +96,9 @@ const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) =
 									siteName: settings.siteName,
 									logoUrl: settings.logoUrl,
 									footerText: settings.footerText,
+									heroLine1: settings.heroLine1,
+									heroLine2: settings.heroLine2,
+									heroDescription: settings.heroDescription,
 								}}
 							>
 								<div className="app_inner">
