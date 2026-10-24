@@ -55,7 +55,8 @@ export const postFromDbInit: PostTypeFromDb = {
 
 export type PostErrorsType = {
 	// [key: string]: {}
-	[key in keyof PostTypeFromDb]: {
+	// "-?" keeps all keys required (the new optional fields must not make the errors optional)
+	[key in keyof PostTypeFromDb]-?: {
 		kind?: string; // "regexp", "required", etc.
 		message?: string; // the actual error message
 		name?: string; // ValidatorError
