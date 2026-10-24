@@ -13,6 +13,7 @@ import { usePromptopiaContext } from "@/contexts/PromptopiaContext";
 import Btn_PostTag from "./fragments/Btn_PostTag";
 import IconEmbedSvgPop from "./fragments/IconEmbedSvgPop";
 import Btn_PostActions from "./fragments/Btn_PostActions";
+import SharePlatformButtons from "./fragments/SharePlatformButtons";
 
 interface PostCardProps {
 	post: PostTypeFromDb;
@@ -105,6 +106,21 @@ const PostCard: React.FC<PostCardProps> = ({
 				/>
 			</div>
 
+			{(post.title || post.description) && (
+				<div className="mt-5">
+					{post.title && (
+						<h3 className="font-satoshi break-words text-lg font-semibold leading-snug text-mlt-dark-2">
+							{post.title}
+						</h3>
+					)}
+					{post.description && (
+						<p className="mt-1 whitespace-pre-line break-words text-sm text-mlt-dark-6">
+							{post.description}
+						</p>
+					)}
+				</div>
+			)}
+
 			{post?.image?._id && (
 				<div className="post_card_image_container">
 					<Image
@@ -121,7 +137,10 @@ const PostCard: React.FC<PostCardProps> = ({
 			<div
 				className={`post_card_prompt ${post?.image ? "-mt-6 post_card_prompt_wit_image" : "mt-6"}`}
 			>
-				<p className="post_card_prompt_text" onClick={handlePromptCopy}>
+				<p
+					className="post_card_prompt_text max-h-[146px] whitespace-pre-wrap break-words"
+					onClick={handlePromptCopy}
+				>
 					{post.prompt}
 				</p>
 				{post?.link && (
@@ -155,6 +174,8 @@ const PostCard: React.FC<PostCardProps> = ({
 					</a>
 				)}
 			</div>
+
+			<SharePlatformButtons platforms={post.sharePlatforms} prompt={post.prompt} />
 
 			{isEditMode && (
 				<p className={`mb-3 text-sm font-semibold ${statusStyles[status]}`}>

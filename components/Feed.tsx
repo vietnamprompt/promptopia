@@ -67,7 +67,10 @@ const Feed: React.FC = () => {
 			(post) =>
 				(filter[SearchTypes.AUTHOR] && caseInsensitiveRegex.test(post.creator.name)) ||
 				(filter[SearchTypes.AUTHOR] && caseInsensitiveRegex.test(post.creator.username)) ||
-				(filter[SearchTypes.PROMPT] && caseInsensitiveRegex.test(post.prompt)) ||
+				(filter[SearchTypes.PROMPT] &&
+					(caseInsensitiveRegex.test(post.prompt) ||
+						caseInsensitiveRegex.test(post.title ?? "") ||
+						caseInsensitiveRegex.test(post.description ?? ""))) ||
 				(filter[SearchTypes.TAGS] && caseInsensitiveRegex.test(post.tags.join("")))
 		);
 	};

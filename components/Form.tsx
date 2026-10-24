@@ -7,7 +7,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { FormProps, FormTypes } from "@/interfaces/Form";
-import { AiCategories, PostTypeFromDb } from "@/interfaces/Post";
+import { AiCategories, POST_LIMITS, PostTypeFromDb } from "@/interfaces/Post";
+import { SharePlatform, SHARE_PLATFORMS } from "@/interfaces/SharePlatform";
 
 import CheckList, { ListItemType } from "@/components/fragments/CheckList";
 
@@ -54,6 +55,20 @@ const Form: React.FC<FormProps> = ({
 	const displayAnError = (errorKey: keyof PostTypeFromDb) =>
 		haveError(errorKey) && <p className="form_error">{errors?.[errorKey]?.message}</p>;
 
+	// The old posts do not have these fields.
+	const title = post.title ?? "";
+	const description = post.description ?? "";
+	const selectedPlatforms: SharePlatform[] = post.sharePlatforms ?? [];
+
+	const toggleSharePlatform = (platform: SharePlatform) => {
+		setPost({
+			...post,
+			sharePlatforms: selectedPlatforms.includes(platform)
+				? selectedPlatforms.filter((item) => item !== platform)
+				: [...selectedPlatforms, platform],
+		});
+	};
+
 	return (
 		<section className="page_section_left w-full">
 			<Header
@@ -67,6 +82,44 @@ const Form: React.FC<FormProps> = ({
 				className="mt-10 w-full max-w-2xl flex flex-col gap-7 glassmorphism"
 				onSubmit={handleSubmit}
 			>
+				<label htmlFor="prompt-title">
+					<span className="form_input_title">{t("title")}</span>
+
+					<input
+						required
+						className="form_input"
+						id="prompt-title"
+						maxLength={POST_LIMITS.titleMax}
+						minLength={POST_LIMITS.titleMin}
+						placeholder={t("titlePlaceholder")}
+						value={title}
+						onChange={(e) => setPost({ ...post, title: e.target.value })}
+					/>
+					<span className="text-xs text-mlt-dark-6">
+						{title.length} / {POST_LIMITS.titleMax}
+					</span>
+					{displayAnError("title")}
+				</label>
+
+				<label htmlFor="prompt-description">
+					<span className="form_input_title">{t("description")}</span>
+
+					<textarea
+						required
+						className="form_input h-[100px] min-h-[50px]"
+						id="prompt-description"
+						maxLength={POST_LIMITS.descriptionMax}
+						minLength={POST_LIMITS.descriptionMin}
+						placeholder={t("descriptionPlaceholder")}
+						value={description}
+						onChange={(e) => setPost({ ...post, description: e.target.value })}
+					/>
+					<span className="text-xs text-mlt-dark-6">
+						{description.length} / {POST_LIMITS.descriptionMax}
+					</span>
+					{displayAnError("description")}
+				</label>
+
 				<label htmlFor="prompt-content">
 					<span className="form_input_title">{t("yourPrompt")}</span>
 
@@ -74,10 +127,14 @@ const Form: React.FC<FormProps> = ({
 						required
 						className="form_input form_textarea"
 						id="prompt-content"
+						maxLength={POST_LIMITS.promptMax}
 						placeholder={t("yourPromptPlaceholder")}
 						value={post.prompt}
 						onChange={(e) => setPost({ ...post, prompt: e.target.value })}
 					/>
+					<span className="text-xs text-mlt-dark-6">
+						{post.prompt.length} / {POST_LIMITS.promptMax}
+					</span>
 					{displayAnError("prompt")}
 				</label>
 
@@ -94,6 +151,33 @@ const Form: React.FC<FormProps> = ({
 					/>
 					{displayAnError("tags")}
 				</label>
+
+				<div>
+					<span className="form_input_title">{t("sharePlatforms")}</span>
+					<p className="mt-1 text-sm text-mlt-dark-6">{t("sharePlatformsDesc")}</p>
+
+					<div className="mt-3 flex flex-wrap gap-2">
+						{Object.values(SharePlatform).map((platform) => {
+							const isSelected = selectedPlatforms.includes(platform);
+
+							return (
+								<button
+									key={platform}
+									aria-pressed={isSelected}
+									className={`post_button !px-3 !py-1 text-sm ${
+										isSelected
+											? "bg-mlt-orange-secondary text-white"
+											: "bg-white text-mlt-dark-4"
+									}`}
+									type="button"
+									onClick={() => toggleSharePlatform(platform)}
+								>
+									{SHARE_PLATFORMS[platform].name}
+								</button>
+							);
+						})}
+					</div>
+				</div>
 
 				{/* {post.aiCategory === AiCategories.CHAT && ( */}
 				<label htmlFor="prompt-link">

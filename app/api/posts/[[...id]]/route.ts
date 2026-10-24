@@ -18,6 +18,7 @@ import { authOptions } from "@/lib/auth-options";
 import { isAdminEmail } from "@/lib/admin";
 import { connectToMongoDb } from "@/lib/mongodb-mongoose";
 import { PostStatus } from "@/interfaces/Post";
+import { normalizeSharePlatforms } from "@/interfaces/SharePlatform";
 import Post from "@/models/post";
 
 export const dynamic = "force-dynamic";
@@ -89,13 +90,17 @@ export async function POST(request: NextRequest) {
 	}
 
 	try {
-		const { prompt, tags, aiCategory, link, image } = await request.json();
+		const { title, description, prompt, tags, aiCategory, link, image, sharePlatforms } =
+			await request.json();
 
 		await connectToMongoDb();
 
 		// The creator and the status are never taken from the request body.
 		const newPost = new Post({
 			creator: userId,
+			title,
+			description,
+			sharePlatforms: normalizeSharePlatforms(sharePlatforms),
 			prompt,
 			tags,
 			aiCategory,
@@ -130,7 +135,8 @@ async function updatePost(request: NextRequest, { params }: Context) {
 	}
 
 	try {
-		const { prompt, tags, aiCategory, link, image } = await request.json();
+		const { title, description, prompt, tags, aiCategory, link, image, sharePlatforms } =
+			await request.json();
 
 		await connectToMongoDb();
 
@@ -146,7 +152,17 @@ async function updatePost(request: NextRequest, { params }: Context) {
 		}
 
 		// Every edited post must be approved again by an admin.
-		post.set({ prompt, tags, aiCategory, link, image, status: PostStatus.PENDING });
+		post.set({
+			title,
+			description,
+			sharePlatforms: normalizeSharePlatforms(sharePlatforms),
+			prompt,
+			tags,
+			aiCategory,
+			link,
+			image,
+			status: PostStatus.PENDING,
+		});
 
 		await post.save();
 		await post.populate(["creator", "image"]);
